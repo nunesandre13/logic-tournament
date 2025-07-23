@@ -3,7 +3,7 @@ package services
 import core.Game
 import core.GameType
 import core.Player
-import games.tictactoe.TicTacToeGame
+import games.TicTacToe.TicTacToeGame
 
 class GameFactory {
 

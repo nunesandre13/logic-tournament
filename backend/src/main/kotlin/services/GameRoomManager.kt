@@ -3,7 +3,7 @@ package services
 import core.Game
 import core.GameType
 import domain.GameRoom
-import domain.Id
+import org.example.commonDomain.Id
 import services.dataStructures.GameRoomsDataStructure
 
 class GameRoomManager () {

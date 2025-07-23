@@ -2,10 +2,7 @@ package games.TicTacToe
 
 import core.Player
 import core.GameResult
-import games.tictactoe.TicTacToeGame
-import games.TicTacToe.TicTacToeMove
-import Command
-import core.Id
+import core.Command
 import java.util.Scanner
 
 fun main() {

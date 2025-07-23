@@ -1,8 +1,7 @@
-package games.tictactoe
+package games.TicTacToe
 
-import Command
+import core.Command
 import core.*
-import games.TicTacToe.TicTacToeMove
 
 class TicTacToeGame(
     override val players: List<Player>,
@@ -12,13 +11,12 @@ class TicTacToeGame(
 ) : Game {
     override val type: GameType = GameType.TIC_TAC_TOE
 
-
-    override fun play(command: Command): TicTacToeGame {
+    override fun play(command: Command.PlayCommand): TicTacToeGame {
         return when (command) {
-            is Command.MakeMove -> makeMove(command.gameMove as TicTacToeMove)
-            is Command.Resign -> handleResign()
-            is Command.OfferDraw -> handleOfferDraw()
-            is Command.AcceptDraw -> handleAcceptDraw()
+            is Command.PlayCommand.MakeMove -> makeMove(command.gameMove as TicTacToeMove)
+            is Command.PlayCommand.Resign -> handleResign()
+            is Command.PlayCommand.OfferDraw -> handleOfferDraw()
+            is Command.PlayCommand.AcceptDraw -> handleAcceptDraw()
             else -> throw IllegalArgumentException("Comando desconhecido para Tic-Tac-Toe")
         }
     }

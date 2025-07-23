@@ -2,38 +2,39 @@ package services
 
 import core.GameType
 import core.Player
+import domain.CancellationMatchMakingResult
 import domain.GameRoom
+import domain.MatchMakingResult
 import services.dataStructures.AwaitingPlayersSinc
 import kotlin.time.Duration.Companion.minutes
 
 class MatchMakingService(
-    private val gameRoomManager: GameRoomManager, // Injetamos o GameRoomManager
+    private val gameRoomManager: GameRoomManager,
     private val gameFactory: GameFactory
 ) {
     private val timeToAwait = 1.minutes
     private val waitingPlayers: Map<GameType, AwaitingPlayersSinc> = GameType.entries.associateWith { AwaitingPlayersSinc(timeToAwait) }
 
-    fun match(gameType : GameType, player : Player) : GameRoom {
+    fun match(gameType : GameType, player : Player) : MatchMakingResult {
        waitingPlayers[gameType]?.let { awaitingPlayersSinc ->
            when (val playerMatched = awaitingPlayersSinc.getPlayer(player)) {
                is AwaitingPlayersSinc.MatchingResult.CreatorSuccess -> {
                    val gameRoom = gameRoomManager.createRoom(gameFactory.createGame(gameType,
                        listOf(playerMatched.matchedPlayer, player)),playerMatched.roomId)
-                   return gameRoom
+                   return MatchMakingResult.Success(gameRoom)
                }
                is AwaitingPlayersSinc.MatchingResult.AwaitedSuccess -> {
-                   return gameRoomManager.getGameRoom(gameType, playerMatched.roomId)
+                   return MatchMakingResult.Success(gameRoomManager.getGameRoom(gameType, playerMatched.roomId))
                }
-               is AwaitingPlayersSinc.MatchingResult.Failure -> throw  IllegalArgumentException("Player $player")
+               is AwaitingPlayersSinc.MatchingResult.Failure -> return  MatchMakingResult.Failure(IllegalArgumentException("Player $player"))
            }
 
-        } ?: throw  IllegalArgumentException("Player $player")
+        } ?: return MatchMakingResult.Failure(IllegalStateException("Player $player"))
     }
 
-    // boolean por agora np futuro uma mensagem de erro
-    fun cancelMatch(gameType : GameType, player : Player) : Boolean {
+    fun cancelMatch(gameType : GameType, player : Player) : CancellationMatchMakingResult {
         waitingPlayers[gameType]?.let { awaitingPlayersSinc ->
-            return awaitingPlayersSinc.cancelMatchingPlayer(player)
-        } ?: return false
+            return if (awaitingPlayersSinc.cancelMatchingPlayer(player)) CancellationMatchMakingResult.Cancelled else CancellationMatchMakingResult.ImpossibleToCancel
+        } ?: return CancellationMatchMakingResult.ImpossibleToCancel
     }
 }

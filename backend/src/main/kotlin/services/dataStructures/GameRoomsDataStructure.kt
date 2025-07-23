@@ -3,7 +3,7 @@ package services.dataStructures
 import core.Game
 import core.Player
 import domain.GameRoom
-import domain.Id
+import org.example.commonDomain.Id
 import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -59,7 +59,8 @@ class GameRoomsDataStructure() {
     fun updateGameInstance (id: Id, state: Game) {
         mutex.withLock {
             val existing = rooms[id] ?: throw IllegalStateException(" Cannot change state for id $id")
-            existing.game = state
+            val newGameRoom = existing.copy(game = state)
+            rooms[id] = newGameRoom
             awaitingChanges[id]?.forEach {
                 it.isDone = true
                 it.condition.signal()

@@ -1,46 +1,56 @@
 package services
 
-import Command
+import core.Command
 import core.*
-import domain.GameRoom
-import domain.Id
+import domain.CancellationMatchMakingResult
+import domain.CommandResult
+import domain.MatchMakingResult
 
 
 class GameService(
 private val matchmakingService: MatchMakingService,
 private val gameRoomManager: GameRoomManager,
 ) {
-    fun requestMatch(player: Player, gameType: GameType): MatchmakingResult {
-        val result = matchmakingService.match(gameType, player)
-        return MatchmakingResult(result)
-    }
 
-    fun receiveCmd(command: Command): CommandResult { // CommandResult é um tipo de retorno genérico para o handler
-        when (command) {
-            is Command.MakeMove -> {}
-            else -> {}
+    fun receiveCmd(command: Command): CommandResult {
+        return when (command) {
+            is Command.MatchingCommand -> treatMatchCommand(command)
+            is Command.PlayCommand -> treatPlayCommand(command)
         }
-        return TODO()
     }
 
 
-
-    sealed class CommandResult {
-        data class Success(val message: String) : CommandResult()
-        data class Error(val message: String, val throwable: Throwable? = null) : CommandResult()
-        data class Data(val data: Any) : CommandResult() // Para comandos que retornam dados, como GetGameStatus
+    private fun treatMatchCommand(command: Command.MatchingCommand): CommandResult {
+        return when (command) {
+            is Command.MatchingCommand.RequestMatch -> requestMatch(command.player, command.gameType)
+            is Command.MatchingCommand.CancelMatchSearching -> cancelMatch(command.player, command.gameType)
+        }
     }
 
-}
+    private fun requestMatch(player: Player, gameType: GameType ): CommandResult {
+        return when (val matchResponse = matchmakingService.match(gameType, player)) {
+            is MatchMakingResult.Success -> CommandResult.MatchSucceed(matchResponse.gameRoom)
+            is MatchMakingResult.Failure -> CommandResult.MatchError
+        }
+    }
 
-// para pensar melhor ainda por agora nao, mas provavelmente um objeto de dominio
-class MatchmakingResult (gameRoom : GameRoom) {}
+    private fun cancelMatch(player: Player, gameType: GameType ): CommandResult {
+       val request = matchmakingService.cancelMatch(gameType, player)
+        return when (request) {
+            is CancellationMatchMakingResult.Cancelled -> CommandResult.Success("Cancelado com sucesso")
+            is CancellationMatchMakingResult.ImpossibleToCancel -> CommandResult.Error("Cancelamento Nao sucesso")
+        }
+    }
 
-// Exemplos de classes de resultado para makeMove
-sealed class GameActionResult {
-    data class Success(val message: String) : GameActionResult()
-    data class InvalidMove(val message: String) : GameActionResult()
-    data class NotYourTurn(val message: String) : GameActionResult()
-    data class GameEnded(val result: Any) : GameActionResult() // O 'result' seria o objeto de resultado final do jogo
-    // ...
+    private fun treatPlayCommand(command: Command.PlayCommand): CommandResult {
+        val gameRoom = gameRoomManager.getGameRoom(command.gameType,command.roomId)
+        try {
+            val play = gameRoom.game.play(command)
+            gameRoomManager.updateGameRoom(play,gameRoom.id)
+            return CommandResult.Success("Play " + command.player)
+        }catch (e:Exception){
+         return CommandResult.Error("Something")
+        }
+    }
+
 }

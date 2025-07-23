@@ -1,4 +1,4 @@
-package org.example.services
+package services
 
 import org.example.data.DataMem.PlayerDataMem
 import org.example.domain.PlayerDetails

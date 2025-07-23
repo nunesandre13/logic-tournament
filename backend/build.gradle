@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation(project(':games'))
+    implementation(project(':common'))
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
     implementation(platform("org.http4k:http4k-bom:6.1.0.1"))
