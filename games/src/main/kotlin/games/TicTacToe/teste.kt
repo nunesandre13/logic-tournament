@@ -3,6 +3,8 @@ package games.TicTacToe
 import core.Player
 import core.GameResult
 import core.Command
+import core.GameType
+import org.example.commonDomain.Id
 import java.util.Scanner
 
 fun main() {
@@ -34,7 +36,7 @@ fun main() {
 
             if (input.equals("resign", ignoreCase = true)) {
                 println("${game.currentPlayer.name} decidiu resignar.")
-                game = game.play(Command.Resign(game.currentPlayer.id, Id(0)))
+                game = game.play(Command.PlayCommand.Resign(game.currentPlayer, GameType.TIC_TAC_TOE,null))
                 moveMade = true
                 break // Sai do loop de jogada e verifica o resultado do jogo
             }
@@ -49,7 +51,7 @@ fun main() {
                 val acceptInput = scanner.nextLine().trim()
                 if (acceptInput.equals("sim", ignoreCase = true)) {
                     println("Empate aceite!")
-                    game = game.play(Command.AcceptDraw(game.currentPlayer.id, Id(0)))
+                    game = game.play(Command.PlayCommand.AcceptDraw(game.currentPlayer,GameType.TIC_TAC_TOE,null))
                     moveMade = true
                     break // Sai do loop de jogada e verifica o resultado do jogo
                 } else {
@@ -69,7 +71,7 @@ fun main() {
 
                     // Verificar se o movimento é válido antes de tentar jogar
                     if (game.availableMoves().contains(move)) {
-                        game = game.play(Command.MakeMove(game.currentPlayer.id, Id(0), move))
+                        game = game.play(Command.PlayCommand.MakeMove(game.currentPlayer, GameType.TIC_TAC_TOE,null, move))
                         moveMade = true
                     } else {
                         println("Jogada inválida! A posição ($row, $col) está ocupada ou fora dos limites.")

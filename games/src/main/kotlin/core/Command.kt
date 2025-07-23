@@ -36,14 +36,14 @@ sealed interface Command {
     sealed interface PlayCommand : Command {
         val player: Player
         val gameType: GameType
-        val roomId: Id
+        val roomId: Id?
 
         @Serializable
         @SerialName("MAKE_MOVE")
         data class MakeMove(
             override val player: Player,
             override val gameType: GameType,
-            override val roomId: Id,
+            override val roomId: Id?,
             val gameMove: Move
         ) : PlayCommand
 
@@ -52,7 +52,7 @@ sealed interface Command {
         data class Resign(
             override val player: Player,
             override val gameType: GameType,
-            override val roomId: Id
+            override val roomId: Id?
         ) : PlayCommand
 
         @Serializable
@@ -60,7 +60,7 @@ sealed interface Command {
         data class Pass(
             override val player: Player,
             override val gameType: GameType,
-            override val roomId: Id
+            override val roomId: Id?
         ) : PlayCommand
 
         @Serializable
@@ -68,7 +68,7 @@ sealed interface Command {
         data class OfferDraw(
             override val player: Player,
             override val gameType: GameType,
-            override val roomId: Id
+            override val roomId: Id?
         ) : PlayCommand
 
         @Serializable
@@ -76,14 +76,14 @@ sealed interface Command {
         data class AcceptDraw(
             override val player: Player,
             override val gameType: GameType,
-            override val roomId: Id
+            override val roomId: Id?
         ) : PlayCommand
 
         @Serializable
         @SerialName("GET_GAME_STATUS")
         data class GetGameStatus(
             override val player: Player,
-            override val roomId: Id,
+            override val roomId: Id?,
             override val gameType: GameType
         ) : PlayCommand
     }

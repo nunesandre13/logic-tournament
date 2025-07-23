@@ -43,7 +43,7 @@ private val gameRoomManager: GameRoomManager,
     }
 
     private fun treatPlayCommand(command: Command.PlayCommand): CommandResult {
-        val gameRoom = gameRoomManager.getGameRoom(command.gameType,command.roomId)
+        val gameRoom = gameRoomManager.getGameRoom(command.gameType,command.roomId!!)
         try {
             val play = gameRoom.game.play(command)
             gameRoomManager.updateGameRoom(play,gameRoom.id)
