@@ -15,7 +15,7 @@ private val gameRoomManager: GameRoomManager,
 ) {
 
     fun getStateChange(roomId: Id, gameType: GameType): StateFlow<Game>{
-        return gameRoomManager.collectGameChanges(gameType,roomId)
+        return gameRoomManager.collectGameChanges(gameType, roomId)
     }
 
     fun receiveCmd(command: Command): CommandResult {
