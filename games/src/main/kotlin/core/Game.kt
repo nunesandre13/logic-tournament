@@ -1,7 +1,8 @@
 package core
 
+
 interface Game {
-    val type: GameType
+    val gameType: GameType
     val players: List<Player>
     val result : GameResult
     val currentPlayer: Player

@@ -2,7 +2,6 @@ package services.dataStructures
 
 import core.Game
 import core.Player
-import domain.GameRoom
 import org.example.commonDomain.Id
 import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.ReentrantLock
@@ -56,16 +55,9 @@ class GameRoomsDataStructure() {
         }
     }
 
-    fun updateGameInstance (id: Id, state: Game) {
+    fun destroy(id : Id) {
         mutex.withLock {
-            val existing = rooms[id] ?: throw IllegalStateException(" Cannot change state for id $id")
-            val newGameRoom = existing.copy(game = state)
-            rooms[id] = newGameRoom
-            awaitingChanges[id]?.forEach {
-                it.isDone = true
-                it.condition.signal()
-            }
-            awaitingChanges.remove(id)
+            rooms.remove(id)
         }
     }
 

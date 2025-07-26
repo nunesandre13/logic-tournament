@@ -3,7 +3,6 @@ package services
 import core.GameType
 import core.Player
 import domain.CancellationMatchMakingResult
-import domain.GameRoom
 import domain.MatchMakingResult
 import services.dataStructures.AwaitingPlayersSinc
 import kotlin.time.Duration.Companion.minutes

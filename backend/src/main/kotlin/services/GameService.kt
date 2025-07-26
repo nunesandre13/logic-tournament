@@ -5,12 +5,18 @@ import core.*
 import domain.CancellationMatchMakingResult
 import domain.CommandResult
 import domain.MatchMakingResult
+import kotlinx.coroutines.flow.StateFlow
+import org.example.commonDomain.Id
 
 
 class GameService(
 private val matchmakingService: MatchMakingService,
 private val gameRoomManager: GameRoomManager,
 ) {
+
+    fun getStateChange(roomId: Id, gameType: GameType): StateFlow<Game>{
+        return gameRoomManager.collectGameChanges(gameType,roomId)
+    }
 
     fun receiveCmd(command: Command): CommandResult {
         return when (command) {
@@ -29,7 +35,7 @@ private val gameRoomManager: GameRoomManager,
 
     private fun requestMatch(player: Player, gameType: GameType ): CommandResult {
         return when (val matchResponse = matchmakingService.match(gameType, player)) {
-            is MatchMakingResult.Success -> CommandResult.MatchSucceed(matchResponse.gameRoom)
+            is MatchMakingResult.Success -> CommandResult.MatchSucceed(matchResponse.gameRoom.id,gameType)
             is MatchMakingResult.Failure -> CommandResult.MatchError
         }
     }
@@ -45,8 +51,7 @@ private val gameRoomManager: GameRoomManager,
     private fun treatPlayCommand(command: Command.PlayCommand): CommandResult {
         val gameRoom = gameRoomManager.getGameRoom(command.gameType,command.roomId!!)
         try {
-            val play = gameRoom.game.play(command)
-            gameRoomManager.updateGameRoom(play,gameRoom.id)
+            gameRoomManager.updateGameRoom(command,gameRoom.id)
             return CommandResult.Success("Play " + command.player)
         }catch (e:Exception){
          return CommandResult.Error("Something")

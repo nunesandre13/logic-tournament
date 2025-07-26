@@ -1,3 +1,3 @@
-package org.example.webApi.dataTransferObjects
+package webApi.dto
 
 data class PlayerIN (val name: String, val email: String)

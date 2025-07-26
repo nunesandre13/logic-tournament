@@ -2,14 +2,16 @@ package games.TicTacToe
 
 import core.Command
 import core.*
+import kotlinx.serialization.Serializable
 
+@Serializable
 class TicTacToeGame(
     override val players: List<Player>,
     private val board: List<List<Char>> = List(3) { List(3) { ' ' } } , // ' ' para vazio, 'X' ou 'O'
     override val currentPlayer: Player,
     override val result: GameResult = GameResult.Ongoing
 ) : Game {
-    override val type: GameType = GameType.TIC_TAC_TOE
+    override val gameType: GameType = GameType.TIC_TAC_TOE
 
     override fun play(command: Command.PlayCommand): TicTacToeGame {
         return when (command) {

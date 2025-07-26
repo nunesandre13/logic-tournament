@@ -1,6 +1,7 @@
 package domain
 
 import core.Player
+import services.dataStructures.GameRoom
 
 
 // para pensar melhor ainda por agora nao, mas provavelmente um objeto de dominio

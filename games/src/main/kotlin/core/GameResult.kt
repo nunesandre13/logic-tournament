@@ -1,5 +1,8 @@
 package core
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 sealed class GameResult {
     object Ongoing : GameResult()
     object Draw : GameResult()

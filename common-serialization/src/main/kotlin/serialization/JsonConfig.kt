@@ -1,12 +1,14 @@
 package serialization
 
 import core.Command
+import core.Game
 import core.Move
+import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+
 
 val AppJson = Json {
     prettyPrint = true          // Para JSON formatado e fácil de ler (desativar em produção para otimização)
@@ -32,5 +34,8 @@ val AppJson = Json {
             subclass(TicTacToeMove::class, TicTacToeMove.serializer())
         }
 
+        polymorphic(Game::class) {
+            subclass(TicTacToeGame::class, TicTacToeGame.serializer())
+        }
     }
 }
