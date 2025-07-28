@@ -1,27 +1,29 @@
 package webApi.webSockets.games
 
+import Serializers
 import domain.CommandResult
-import dto.Command
-import dto.Data
-import dto.Event
-import dto.WebSocketResponse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
 import org.http4k.routing.websockets
 import org.http4k.websocket.Websocket
-import org.http4k.websocket.WsMessage
-import serialization.AppJson
 import services.GameService
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlinx.serialization.encodeToString
-import domain.games.GameCommands
+import dto.*
+import kotlinx.coroutines.*
 import org.http4k.core.Request
+import org.http4k.websocket.WsMessage
 import org.http4k.websocket.WsResponse
+import toDTO
+import toDomain
 import java.util.logging.Logger
+import kotlin.time.Duration.Companion.seconds
 
-class GameWebSocketHandler(private val gameServices: GameService) {
+class GameWebSocketHandler(private val gameServices: GameService, serializer : Serializers) {
+
+    private val heartBeatDelay = 20.seconds
+
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    private val webSocketSerializer = serializer.webSocketResponseSerializer
 
     private val logger = Logger.getLogger("GameWebSocketHandler")
 
@@ -29,23 +31,29 @@ class GameWebSocketHandler(private val gameServices: GameService) {
     private val connections = CopyOnWriteArrayList<Websocket>()
 
     fun gameWebSocket(request: Request): WsResponse {
-
         val channel = Channel<WebSocketResponse>(Channel.UNLIMITED)
-
         return websockets { webSocket ->
             connections += webSocket
-
+            heartBeat(channel)
+            sendToSocket(webSocket,channel)
             webSocket.onClose {
                 connections -= webSocket
             }
 
             webSocket.onMessage { message ->
+                println("into Logging------------------------------")
                 logger.info(message.body.toString())
-                when (val response = AppJson.decodeFromString<WebSocketResponse>(message.body.toString())){
-                    is Command -> { treatCommandResponse(response, webSocket) }
-                    is Event -> {}
-                    is Data -> {}
-                    else -> Unit // nao devia ser necessario
+                val response = with(webSocketSerializer){message.body.toString().fromJson()}
+                logger.info(response.toString())
+                when (response) {
+                    is Command -> treatCommandResponse(response, channel)
+                    is Event -> treatEventResponse(response,channel)
+                    is Data -> {
+
+                    }
+                    else -> {
+
+                    }
                 }
             }
             webSocket.onError {
@@ -54,32 +62,65 @@ class GameWebSocketHandler(private val gameServices: GameService) {
         }(request)
     }
 
-    private fun treatCommandResponse(command: Command, webSocket: Websocket) {
-        if (command is GameCommands)
-        when (val result = gameServices.receiveCmd(command)) {
-            is CommandResult.ActionResult -> {
-                // alterar interface para o play retornar um gameActionResult
-            }
+    private fun treatEventResponse(event: Event, channel: Channel<WebSocketResponse>) {
+        when (event) {
+            is HeartBeat -> { logger.info("HEARTBEAT: ${event.timestamp}")}
+            is MessageEvent -> TODO()
+            else -> { TODO()}
+        }
+    }
 
-            is CommandResult.Error -> {
-                webSocket.send(WsMessage("Something went wrong"))
-            }
+    private fun treatCommandResponse(command: Command, channel: Channel<WebSocketResponse>) {
+        scope.launch {
+            if (command is GameCommandsDTO) {
+                logger.info(command.toString() + "COMMAND RECEIVED")
+                val result = gameServices.receiveCmd(command.toDomain())
+                logger.info("Game command result: $result")
+                when (result) {
+                    is CommandResult.ActionResult -> {
+                        // alterar interface para o play retornar um gameActionResult
+                    }
 
-            is CommandResult.MatchError -> {
-                webSocket.send(WsMessage("Something went wrong"))
-            }
+                    is CommandResult.Error -> {
+                        channel.send(MessageEvent("Something went wrong"))
+                    }
 
-            is CommandResult.MatchSucceed -> {
-                val gameFlow = gameServices.getStateChange(result.gameRoomId, result.gameType)
-                CoroutineScope(Dispatchers.IO).launch {
-                    gameFlow.collect { game ->
-                        webSocket.send(WsMessage(AppJson.encodeToString(game)))
+                    is CommandResult.MatchError -> {
+                        channel.send(MessageEvent("Something went wrong"))
+                    }
+
+                    is CommandResult.MatchSucceed -> {
+                        logger.info("MATCH SUCCESS")
+                        val gameFlow = gameServices.getStateChange(result.gameRoomId, result.gameType)
+                        scope.launch {
+                            gameFlow.collect { game ->
+                                channel.send(game.toDTO())
+                            }
+                        }
+                    }
+
+                    is CommandResult.Success -> {
+                        channel.send(MessageEvent("Command success"))
                     }
                 }
             }
+        }
+    }
 
-            is CommandResult.Success -> {
-                webSocket.send(WsMessage("Command with success."))
+    private fun sendToSocket(socket: Websocket, channel: Channel<WebSocketResponse>) {
+        scope.launch {
+            while (isActive) {
+                val json = with(webSocketSerializer) { channel.receive().toJson() }
+                println(json)
+                socket.send(WsMessage(json))
+            }
+        }
+    }
+    private fun heartBeat(channel: Channel<WebSocketResponse>) {
+        scope.launch {
+            while (true) {
+                channel.send(HeartBeat())
+                delay(heartBeatDelay)
             }
         }
     }

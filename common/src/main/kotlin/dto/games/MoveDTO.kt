@@ -5,8 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class MoveDTO {
-
     @Serializable
-    @SerialName("CheckersMove")
-    data class CheckersMoveDTO(val from: Int, val to: Int) : MoveDTO()
+    @SerialName("TicTacToeMove")
+    data class TicTacToeMoveDTO(val row: Int, val col: Int) : MoveDTO()
 }

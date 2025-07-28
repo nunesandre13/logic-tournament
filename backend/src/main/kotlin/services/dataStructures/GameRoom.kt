@@ -1,6 +1,5 @@
 package services.dataStructures
 
-import domain.Command
 import domain.games.Game
 import domain.Player
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import domain.Id
+import domain.games.GameCommands
 
 class GameRoom(val id : Id, val players : List<Player>, game : Game){
 
@@ -17,7 +17,7 @@ class GameRoom(val id : Id, val players : List<Player>, game : Game){
 
     val stateFlow: StateFlow<Game> get() = _stateFlow
 
-    suspend fun play(command: Command.PlayCommand) {
+    suspend fun play(command: GameCommands.PlayCommand) {
         mutex.withLock {
             _stateFlow.value =  _stateFlow.value.play(command)
         }

@@ -1,5 +1,9 @@
 package dto
 
-import domain.games.GameType
+import kotlinx.serialization.Serializable
 
-data class GameDTO(val gameType: GameType, val players: List<PlayerDTO>, val result : GameResultDTO, val currentPlayer: PlayerDTO)
+@Serializable
+sealed class GameDTO: Event{
+    @Serializable
+    data class TicTacToeGameDTO(val players: List<PlayerDTO>, val board: List<List<Char>>, val currentPlayer: PlayerDTO, val result: GameResultDTO) : GameDTO()
+}

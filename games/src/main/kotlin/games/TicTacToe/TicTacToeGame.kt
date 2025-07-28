@@ -5,7 +5,7 @@ import domain.games.*
 
 class TicTacToeGame(
     override val players: List<Player>,
-    private val board: List<List<Char>> = List(3) { List(3) { ' ' } }, // ' ' para vazio, 'X' ou 'O'
+    val board: List<List<Char>> = List(3) { List(3) { ' ' } }, // ' ' para vazio, 'X' ou 'O'
     override val currentPlayer: Player,
     override val result: GameResult = GameResult.Ongoing
 ) : Game {

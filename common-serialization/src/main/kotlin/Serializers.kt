@@ -1,5 +1,8 @@
+
 import serializers.PlayerSerializer
+import serializers.WebSocketResponseSerializer
 
 object  Serializers {
-    private val playerSerializer = PlayerSerializer()
+    val playerSerializer = PlayerSerializer
+    val webSocketResponseSerializer = WebSocketResponseSerializer
 }

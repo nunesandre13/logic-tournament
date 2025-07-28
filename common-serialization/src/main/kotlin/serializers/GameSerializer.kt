@@ -1,4 +1,0 @@
-package serializers
-
-class GameSerializer {
-}
