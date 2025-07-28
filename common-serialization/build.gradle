@@ -1,0 +1,25 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.1.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.0'
+}
+
+group = 'org.example'
+version = 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0'
+    implementation project(':games')
+    implementation project(':common')
+}
+
+test {
+    useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(21)
+}
