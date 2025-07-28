@@ -21,10 +21,10 @@ import org.http4k.core.Request
 import org.http4k.websocket.WsResponse
 import java.util.logging.Logger
 
-
 class GameWebSocketHandler(private val gameServices: GameService) {
 
     private val logger = Logger.getLogger("GameWebSocketHandler")
+
     // por agora algo do genero
     private val connections = CopyOnWriteArrayList<Websocket>()
 

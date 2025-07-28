@@ -1,14 +1,8 @@
-package serialization
-
-import domain.Command
-import domain.games.Game
-import domain.Move
-import games.TicTacToe.TicTacToeGame
-import games.TicTacToe.TicTacToeMove
+import dto.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-
+import kotlinx.serialization.modules.subclass
 
 val AppJson = Json {
     prettyPrint = true          // Para JSON formatado e fácil de ler (desativar em produção para otimização)
@@ -17,25 +11,57 @@ val AppJson = Json {
 
     // *** MÓDULO DE SERIALIZADORES PARA POLIMORFISMO ***
     serializersModule = SerializersModule {
-        // Mapeamento para a interface base 'model.Command'
+        // Mapeamento para a interface base 'WebSocketResponse'
+        polymorphic(WebSocketResponse::class) {
+            // Commands
+            subclass(Command::class)
+            subclass(GameCommandsDTO.MatchingCommandDTO.RequestMatch::class)
+            subclass(GameCommandsDTO.MatchingCommandDTO.CancelMatchSearchingDTO::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.MakeMove::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.Resign::class) // Register specific command implementations
+            subclass(GameCommandsDTO.PlayCommandDTO.Pass::class) // Register specific command implementations
+            subclass(GameCommandsDTO.PlayCommandDTO.OfferDraw::class) // Register specific command implementations
+            subclass(GameCommandsDTO.PlayCommandDTO.AcceptDraw::class) // Register specific command implementations
+            subclass(GameCommandsDTO.PlayCommandDTO.GetGameStatus::class) // Register specific command implementations
+
+            // Data
+            subclass(Data::class) // Register the Data interface as a subclass of WebSocketResponse
+
+
+            // Events
+            subclass(Event::class) // Register the Event interface as a subclass of WebSocketResponse
+            subclass(HeartBeat::class)
+
+        }
+
+
         polymorphic(Command::class) {
-            subclass(Command.MatchingCommand.RequestMatch::class, Command.MatchingCommand.RequestMatch.serializer())
-            subclass(Command.MatchingCommand.CancelMatchSearching::class, Command.MatchingCommand.CancelMatchSearching.serializer())
-            subclass(Command.PlayCommand.MakeMove::class, Command.PlayCommand.MakeMove.serializer())
-            subclass(Command.PlayCommand.Resign::class, Command.PlayCommand.Resign.serializer())
-            subclass(Command.PlayCommand.Pass::class, Command.PlayCommand.Pass.serializer())
-            subclass(Command.PlayCommand.OfferDraw::class, Command.PlayCommand.OfferDraw.serializer())
-            subclass(Command.PlayCommand.AcceptDraw::class, Command.PlayCommand.AcceptDraw.serializer())
-            subclass(Command.PlayCommand.GetGameStatus::class, Command.PlayCommand.GetGameStatus.serializer())
+            subclass(GameCommandsDTO.MatchingCommandDTO::class) // Register the sealed interface
+            subclass(GameCommandsDTO.PlayCommandDTO::class) // Register the sealed interface
         }
 
-        // Mapeamento para a interface base 'Move' (que não é sealed)
-        polymorphic(Move::class) {
-            subclass(TicTacToeMove::class, TicTacToeMove.serializer())
+        polymorphic(GameCommandsDTO.MatchingCommandDTO::class) {
+            subclass(GameCommandsDTO.MatchingCommandDTO.RequestMatch::class)
+            subclass(GameCommandsDTO.MatchingCommandDTO.CancelMatchSearchingDTO::class)
         }
 
-        polymorphic(Game::class) {
-            subclass(TicTacToeGame::class, TicTacToeGame.serializer())
+        polymorphic(GameCommandsDTO.PlayCommandDTO::class) {
+            subclass(GameCommandsDTO.PlayCommandDTO.MakeMove::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.Resign::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.Pass::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.OfferDraw::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.AcceptDraw::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.GetGameStatus::class)
+        }
+
+        polymorphic(GameResultDTO::class) {
+            subclass(GameResultDTO.Ongoing::class)
+            subclass(GameResultDTO.Draw::class)
+            subclass(GameResultDTO.Win::class)
+        }
+
+        polymorphic(MoveDTO::class) {
+            subclass(MoveDTO.CheckersMoveDTO::class)
         }
     }
 }
