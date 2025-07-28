@@ -1,3 +1,3 @@
-package model
+package domain
 
 interface Move

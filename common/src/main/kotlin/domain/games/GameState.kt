@@ -1,4 +1,4 @@
-package model
+package domain.games
 
 enum class GameState {
     WAITING,   // à espera de jogadores, ou do início

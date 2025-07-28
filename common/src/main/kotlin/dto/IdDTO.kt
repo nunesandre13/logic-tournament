@@ -1,6 +1,6 @@
-package model
+package dto
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Id(val id: Long)
+data class IdDTO(val id: Long)

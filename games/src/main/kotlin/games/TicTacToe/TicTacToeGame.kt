@@ -1,9 +1,8 @@
 package games.TicTacToe
 
-import kotlinx.serialization.Serializable
-import model.*
+import domain.*
+import domain.games.*
 
-@Serializable
 class TicTacToeGame(
     override val players: List<Player>,
     private val board: List<List<Char>> = List(3) { List(3) { ' ' } }, // ' ' para vazio, 'X' ou 'O'
@@ -12,12 +11,12 @@ class TicTacToeGame(
 ) : Game {
     override val gameType: GameType = GameType.TIC_TAC_TOE
 
-    override fun play(command: Command.PlayCommand): TicTacToeGame {
+    override fun play(command: GameCommands.PlayCommand): TicTacToeGame {
         return when (command) {
-            is Command.PlayCommand.MakeMove -> makeMove(command.gameMove as TicTacToeMove)
-            is Command.PlayCommand.Resign -> handleResign()
-            is Command.PlayCommand.OfferDraw -> handleOfferDraw()
-            is Command.PlayCommand.AcceptDraw -> handleAcceptDraw()
+            is GameCommands.PlayCommand.MakeMove -> makeMove(command.gameMove as TicTacToeMove)
+            is GameCommands.PlayCommand.Resign -> handleResign()
+            is GameCommands.PlayCommand.OfferDraw -> handleOfferDraw()
+            is GameCommands.PlayCommand.AcceptDraw -> handleAcceptDraw()
             else -> throw IllegalArgumentException("Comando desconhecido para Tic-Tac-Toe")
         }
     }

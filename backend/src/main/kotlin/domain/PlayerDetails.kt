@@ -1,4 +1,4 @@
-package org.example.domain
+package domain
 
 data class PlayerDetails(
     val id: Long,

@@ -1,8 +1,7 @@
-package model
+package domain.games
 
-import kotlinx.serialization.Serializable
+import domain.Player
 
-@Serializable
 sealed class GameResult {
     data object Ongoing : GameResult()
     data object Draw : GameResult()

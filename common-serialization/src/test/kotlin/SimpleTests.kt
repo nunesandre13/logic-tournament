@@ -1,9 +1,9 @@
-import model.Game
-import model.Player
+import domain.games.Game
+import domain.Player
 import games.TicTacToe.TicTacToeGame
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.json.Json
-import model.Id
+import domain.Id
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import serialization.AppJson

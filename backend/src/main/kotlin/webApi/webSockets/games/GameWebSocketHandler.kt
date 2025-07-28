@@ -16,7 +16,7 @@ import serialization.AppJson
 import services.GameService
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.serialization.encodeToString
-import model.GameCommands
+import domain.games.GameCommands
 import org.http4k.core.Request
 import org.http4k.websocket.WsResponse
 import java.util.logging.Logger

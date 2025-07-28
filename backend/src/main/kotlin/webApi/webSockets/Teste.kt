@@ -1,10 +1,10 @@
 package webApi.webSockets
 
-import model.Command
-import model.GameType
-import model.Player
+import domain.games.GameType
+import domain.Player
 import games.TicTacToe.TicTacToeMove
-import model.Id
+import domain.Id
+import domain.games.GameCommands
 import org.http4k.client.WebsocketClient
 import org.http4k.core.Uri
 import org.http4k.websocket.WsMessage
@@ -28,24 +28,24 @@ fun main() {
     while (true) {
         val readCMD = readln().split(" ")
         val roomId = readCMD.getOrNull(3)?.toLongOrNull()
-        val command: Command = when (readCMD[0]) {
+        val command: GameCommands= when (readCMD[0]) {
             "MAKE_MOVE" -> {
                 val position1 = readCMD[1].toInt()
                 val position2 = readCMD[2].toInt()
-                Command.PlayCommand.MakeMove(player, gameType, Id(roomId!!), TicTacToeMove(position1, position2))
+                GameCommands.PlayCommand.MakeMove(player, gameType, TicTacToeMove(position1, position2))
             }
 
-            "RESIGN" -> Command.PlayCommand.Resign(player, gameType, Id(roomId!!))
-            "PASS" -> Command.PlayCommand.Pass(player, gameType, Id(roomId!!))
-            "OFFER_DRAW" -> Command.PlayCommand.OfferDraw(player, gameType, Id(roomId!!))
-            "ACCEPT_DRAW" -> Command.PlayCommand.AcceptDraw(player, gameType, Id(roomId!!))
-            "GET_GAME_STATUS" -> Command.PlayCommand.GetGameStatus(player, Id(roomId!!), gameType)
-            "REQUEST_MATCH" -> Command.MatchingCommand.RequestMatch(player, gameType)
-            "CANCEL_MATCH_SEARCHING" -> Command.MatchingCommand.CancelMatchSearching(player, gameType)
+            "RESIGN" -> GameCommands.PlayCommand.Resign(player, gameType)
+            "PASS" -> GameCommands.PlayCommand.Pass(player, gameType)
+            "OFFER_DRAW" -> GameCommands.PlayCommand.OfferDraw(player, gameType)
+            "ACCEPT_DRAW" -> GameCommands.PlayCommand.AcceptDraw(player, gameType)
+            "GET_GAME_STATUS" -> GameCommands.PlayCommand.GetGameStatus(player, gameType)
+            "REQUEST_MATCH" -> GameCommands.MatchingCommand.RequestMatch(player, gameType)
+            "CANCEL_MATCH_SEARCHING" -> GameCommands.MatchingCommand.CancelMatchSearching(player, gameType)
             else -> error("Comando desconhecido: $readCMD")
         }
         // Serializa com o AppJson
-        val json = AppJson.encodeToString(Command.serializer(), command)
+        val json = AppJson.encodeToString(TODO(), command)
         println("JSON a enviar: $json")
         ws.send(WsMessage(json))
     }

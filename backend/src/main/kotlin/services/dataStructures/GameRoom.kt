@@ -1,13 +1,13 @@
 package services.dataStructures
 
-import model.Command
-import model.Game
-import model.Player
+import domain.Command
+import domain.games.Game
+import domain.Player
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import model.Id
+import domain.Id
 
 class GameRoom(val id : Id, val players : List<Player>, game : Game){
 

@@ -1,10 +1,10 @@
 package services
 
-import model.GameType
-import model.Player
+import domain.games.GameType
+import domain.Player
 import domain.CancellationMatchMakingResult
 import domain.MatchMakingResult
-import model.IGameFactory
+import domain.games.IGameFactory
 import services.dataStructures.AwaitingPlayersSinc
 import kotlin.time.Duration.Companion.minutes
 

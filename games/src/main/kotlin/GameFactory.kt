@@ -1,8 +1,8 @@
-import model.Game
-import model.GameType
-import model.Player
+import domain.games.Game
+import domain.games.GameType
+import domain.Player
 import games.TicTacToe.TicTacToeGame
-import model.IGameFactory
+import domain.games.IGameFactory
 
 class GameFactory: IGameFactory {
 

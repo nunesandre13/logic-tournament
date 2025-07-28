@@ -1,6 +1,6 @@
 package org.example.data.DataMem
 
-import org.example.domain.PlayerDetails
+import domain.PlayerDetails
 import kotlin.random.Random
 
 class PlayerDataMem {

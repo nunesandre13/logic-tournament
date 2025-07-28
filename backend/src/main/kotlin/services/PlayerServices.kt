@@ -1,7 +1,7 @@
 package services
 
 import org.example.data.DataMem.PlayerDataMem
-import org.example.domain.PlayerDetails
+import domain.PlayerDetails
 
 class PlayerServices(private val playerDataMem: PlayerDataMem) {
     fun getPlayer(id: Long): PlayerDetails? = playerDataMem.findById(id)

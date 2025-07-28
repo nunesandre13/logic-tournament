@@ -1,6 +1,6 @@
-package org.example.domain
+package domain
 
-import model.Game
+import domain.games.Game
 
 data class Tournament(
     val id: String,

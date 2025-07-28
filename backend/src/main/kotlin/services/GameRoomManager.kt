@@ -1,11 +1,11 @@
 package services
 
-import model.Command
-import model.Game
-import model.GameType
+import domain.games.Game
+import domain.games.GameType
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
-import model.Id
+import domain.Id
+import domain.games.GameCommands
 import services.dataStructures.GameRoom
 import services.dataStructures.GameRoomsDataStructure
 
@@ -20,7 +20,7 @@ class GameRoomManager () {
         return gameRooms[gameType]?.getById(id) ?: throw IllegalStateException("GameType $gameType not found")
     }
 
-    fun updateGameRoom(command: Command.PlayCommand, id: Id) {
+    fun updateGameRoom(command: GameCommands.PlayCommand, id: Id) {
         return runBlocking { gameRooms[command.gameType]?.getById(id)?.play(command) ?: throw IllegalStateException("GameType $command.gameType not found") }
     }
 

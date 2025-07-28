@@ -1,7 +1,7 @@
 package services.dataStructures
 
-import model.Player
-import model.Id
+import domain.Player
+import domain.Id
 import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock

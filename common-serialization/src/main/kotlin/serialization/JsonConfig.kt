@@ -1,8 +1,8 @@
 package serialization
 
-import model.Command
-import model.Game
-import model.Move
+import domain.Command
+import domain.games.Game
+import domain.Move
 import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
 import kotlinx.serialization.json.Json

@@ -4,7 +4,10 @@ import domain.CancellationMatchMakingResult
 import domain.CommandResult
 import domain.MatchMakingResult
 import kotlinx.coroutines.flow.StateFlow
-import model.*
+import domain.*
+import domain.games.Game
+import domain.games.GameCommands
+import domain.games.GameType
 
 
 class GameService(

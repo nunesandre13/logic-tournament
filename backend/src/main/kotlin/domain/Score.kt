@@ -1,4 +1,4 @@
-package org.example.domain
+package domain
 
 data class Score(
     val playerId: String,

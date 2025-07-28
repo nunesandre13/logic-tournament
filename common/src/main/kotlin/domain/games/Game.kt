@@ -1,4 +1,7 @@
-package model
+package domain.games
+
+import domain.Move
+import domain.Player
 
 
 interface Game {

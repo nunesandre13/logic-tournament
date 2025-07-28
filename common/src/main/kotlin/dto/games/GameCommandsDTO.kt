@@ -1,10 +1,8 @@
 package dto
 
-import dto.interfaces.Command
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import model.GameType
-import model.Id
+import domain.games.GameType
 
 @Serializable
 sealed interface GameCommandsDTO : Command {
@@ -36,14 +34,14 @@ sealed interface GameCommandsDTO : Command {
     sealed interface PlayCommandDTO : Command {
         val player: PlayerDTO
         val gameType: GameType
-        val roomId: Id?
+        val roomId: IdDTO?
 
         @Serializable
         @SerialName("MAKE_MOVE")
         data class MakeMove(
             override val player: PlayerDTO,
             override val gameType: GameType,
-            override val roomId: Id?,
+            override val roomId: IdDTO?,
             val gameMove: MoveDTO
         ) : PlayCommandDTO
 
@@ -52,7 +50,7 @@ sealed interface GameCommandsDTO : Command {
         data class Resign(
             override val player: PlayerDTO,
             override val gameType: GameType,
-            override val roomId: Id?
+            override val roomId: IdDTO?
         ) : PlayCommandDTO
 
         @Serializable
@@ -60,7 +58,7 @@ sealed interface GameCommandsDTO : Command {
         data class Pass(
             override val player: PlayerDTO,
             override val gameType: GameType,
-            override val roomId: Id?
+            override val roomId: IdDTO?
         ) : PlayCommandDTO
 
         @Serializable
@@ -68,7 +66,7 @@ sealed interface GameCommandsDTO : Command {
         data class OfferDraw(
             override val player: PlayerDTO,
             override val gameType: GameType,
-            override val roomId: Id?
+            override val roomId: IdDTO?
         ) : PlayCommandDTO
 
         @Serializable
@@ -76,14 +74,14 @@ sealed interface GameCommandsDTO : Command {
         data class AcceptDraw(
             override val player: PlayerDTO,
             override val gameType: GameType,
-            override val roomId: Id?
+            override val roomId: IdDTO?
         ) : PlayCommandDTO
 
         @Serializable
         @SerialName("GET_GAME_STATUS")
         data class GetGameStatus(
             override val player: PlayerDTO,
-            override val roomId: Id?,
+            override val roomId: IdDTO?,
             override val gameType: GameType
         ) : PlayCommandDTO
     }
