@@ -11,22 +11,22 @@ class TicTacToeGame(
 ) : Game {
     override val gameType: GameType = GameType.TIC_TAC_TOE
 
-    override fun play(command: GameCommands.PlayCommand): TicTacToeGame {
+    override fun play(command: GameCommands.PlayCommand): GameActionResult {
         return when (command) {
             is GameCommands.PlayCommand.MakeMove -> makeMove(command.gameMove as TicTacToeMove)
             is GameCommands.PlayCommand.Resign -> handleResign()
             is GameCommands.PlayCommand.OfferDraw -> handleOfferDraw()
             is GameCommands.PlayCommand.AcceptDraw -> handleAcceptDraw()
-            else -> throw IllegalArgumentException("Comando desconhecido para Tic-Tac-Toe")
+            else -> return GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
         }
     }
 
-    private fun makeMove(move: TicTacToeMove): TicTacToeGame {
+    private fun makeMove(move: TicTacToeMove): GameActionResult {
         if (result != GameResult.Ongoing) {
-            throw IllegalStateException("O jogo já terminou.")
+            return GameActionResult.GameEnded("O jogo já terminou.")
         }
         if (board[move.row][move.col] != ' ') {
-            throw IllegalArgumentException("Célula já ocupada.")
+            return GameActionResult.InvalidMove("Célula já ocupada.")
         }
 
         val newBoard = board.toMutableList().map { it.toMutableList() }
@@ -35,27 +35,27 @@ class TicTacToeGame(
         val newResult = checkGameResult(newBoard)
 
         val nextTurn = players.first { it != currentPlayer }
+        return GameActionResult.Success(TicTacToeGame(players, newBoard, nextTurn, newResult))
 
-        return TicTacToeGame(players, newBoard, nextTurn, newResult)
     }
 
-    private fun handleResign(): TicTacToeGame {
+    private fun handleResign(): GameActionResult {
         val winner = players.first { it != currentPlayer }
-        return TicTacToeGame(players, board, currentPlayer, GameResult.Win(winner))
+        return GameActionResult.Success(TicTacToeGame(players, board, currentPlayer, GameResult.Win(winner)))
     }
 
-    private fun handleOfferDraw(): TicTacToeGame {
+    private fun handleOfferDraw(): GameActionResult {
         // Implementação para oferecer um empate.
         // Pode ser necessário um estado temporário para gerir a oferta.
         // Para simplificação, pode ser assumido que um OfferDraw implica uma espera por AcceptDraw.
         // Por agora, não altera o estado do jogo se não for aceite imediatamente.
-        return this
+        return GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
     }
 
-    private fun handleAcceptDraw(): TicTacToeGame {
+    private fun handleAcceptDraw(): GameActionResult {
         // Implementação para aceitar um empate.
         // Isto deve ser chamado após um OfferDraw.
-        return TicTacToeGame(players, board, currentPlayer, GameResult.Draw)
+        return GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
     }
 
 

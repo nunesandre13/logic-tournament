@@ -1,5 +1,6 @@
 package domain
 
+import domain.games.GameActionResult
 import domain.games.GameType
 
 sealed class CommandResult {

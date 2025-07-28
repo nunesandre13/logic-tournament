@@ -6,11 +6,16 @@ import domain.Player
 import games.TicTacToe.TicTacToeMove
 import domain.Id
 import domain.games.GameCommands
+import dto.Command
+import dto.Event
+import dto.GameDTO
 import dto.IdDTO
+import games.TicTacToe.TicTacToeGame
 import org.http4k.client.WebsocketClient
 import org.http4k.core.Uri
 import org.http4k.websocket.WsMessage
 import toDTO
+import toDomain
 
 fun main() {
     println("Enter Player Name")
@@ -25,6 +30,12 @@ fun main() {
     val ws = WebsocketClient.nonBlocking(Uri.of("ws://localhost:9000/games"))
 
     ws.onMessage {
+        val result = with(serializer.webSocketResponseSerializer){ it.bodyString().fromJson()}
+        when(result){
+            is Command -> {}
+            is Event -> { handleEvent(result) }
+            else -> {}
+        }
         println("Resposta do servidor: ${it.bodyString()}")
     }
 
@@ -74,3 +85,31 @@ fun main() {
     }
 }
 
+private fun handleEvent(event: Event) {
+    when (event) {
+        is GameDTO -> {
+            val game = event.toDomain()
+            if (game is TicTacToeGame) {
+                printBoard(game)
+            }
+        }
+        else -> {}
+    }
+}
+
+private fun printBoard(game: TicTacToeGame) {
+    val boardField = TicTacToeGame::class.java.getDeclaredField("board")
+    boardField.isAccessible = true
+    @Suppress("UNCHECKED_CAST")
+    val board = boardField.get(game) as List<List<Char>>
+
+    println("-------------")
+    for (row in board.indices) {
+        print("| ")
+        for (col in board[row].indices) {
+            print("${board[row][col]} | ")
+        }
+        println()
+        println("-------------")
+    }
+}

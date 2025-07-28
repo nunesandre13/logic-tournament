@@ -1,4 +1,4 @@
 package dto
 
 
-sealed interface Data: WebSocketResponse
+sealed interface Data: WebSocketMessage

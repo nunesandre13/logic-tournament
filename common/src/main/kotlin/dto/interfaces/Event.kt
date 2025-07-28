@@ -1,4 +1,4 @@
 package dto
 
 
-sealed interface Event: WebSocketResponse
+sealed interface Event: WebSocketMessage

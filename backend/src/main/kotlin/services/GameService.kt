@@ -9,7 +9,6 @@ import domain.games.Game
 import domain.games.GameCommands
 import domain.games.GameType
 
-
 class GameService(
 private val matchmakingService: MatchMakingService,
 private val gameRoomManager: GameRoomManager,
@@ -51,11 +50,10 @@ private val gameRoomManager: GameRoomManager,
 
     private fun treatPlayCommand(command: GameCommands.PlayCommand, roomId: Id?): CommandResult {
         val gameRoom = gameRoomManager.getGameRoom(command.gameType,roomId ?: throw IllegalStateException())
-        try {
-            gameRoomManager.updateGameRoom(command,gameRoom.id)
-            return CommandResult.Success("Play " + command.player)
+        return try {
+            CommandResult.ActionResult(gameRoomManager.updateGameRoom(command,gameRoom.id))
         }catch (e:Exception){
-         return CommandResult.Error("Something")
+            CommandResult.Error("Something")
         }
     }
 

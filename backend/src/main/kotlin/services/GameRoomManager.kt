@@ -5,6 +5,7 @@ import domain.games.GameType
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
 import domain.Id
+import domain.games.GameActionResult
 import domain.games.GameCommands
 import services.dataStructures.GameRoom
 import services.dataStructures.GameRoomsDataStructure
@@ -20,8 +21,8 @@ class GameRoomManager () {
         return gameRooms[gameType]?.getById(id) ?: throw IllegalStateException("GameType $gameType not found")
     }
 
-    fun updateGameRoom(command: GameCommands.PlayCommand, id: Id) {
-        return runBlocking { gameRooms[command.gameType]?.getById(id)?.play(command) ?: throw IllegalStateException("GameType $command.gameType not found") }
+    fun updateGameRoom(command: GameCommands.PlayCommand, id: Id): GameActionResult {
+        return runBlocking{ gameRooms[command.gameType]?.getById(id)?.play(command) ?: throw IllegalStateException("GameType $command.gameType not found") }
     }
 
     fun collectGameChanges(gameType: GameType, id: Id): StateFlow<Game> {

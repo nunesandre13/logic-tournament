@@ -1,10 +1,28 @@
 import domain.Move
 import domain.games.Game
+import domain.games.GameActionResult
 import domain.games.GameCommands
 import domain.games.GameResult
 import dto.*
 import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
+
+fun GameActionResultDTO.toDomain(): GameActionResult = when (this) {
+    is GameActionResultDTO.SuccessDTO -> GameActionResult.Success(game.toDomain())
+    is GameActionResultDTO.InvalidMoveDTO -> GameActionResult.InvalidMove(message)
+    is GameActionResultDTO.NotYourTurnDTO -> GameActionResult.NotYourTurn(message)
+    is GameActionResultDTO.GameEndedDTO -> GameActionResult.GameEnded(message)
+    is GameActionResultDTO.InvalidCommandDTO -> GameActionResult.InvalidCommand(message)
+    else -> throw IllegalArgumentException("Unknown action result type: $this")
+}
+
+fun GameActionResult.toDTO(): GameActionResultDTO = when (this) {
+    is GameActionResult.Success -> GameActionResultDTO.SuccessDTO(game.toDTO())
+    is GameActionResult.InvalidMove -> GameActionResultDTO.InvalidMoveDTO(message)
+    is GameActionResult.NotYourTurn -> GameActionResultDTO.NotYourTurnDTO(message)
+    is GameActionResult.GameEnded -> GameActionResultDTO.GameEndedDTO(message)
+    is GameActionResult.InvalidCommand -> GameActionResultDTO.InvalidCommandDTO(message)
+}
 
 
 fun GameCommandsDTO.toDomain(): GameCommands{
