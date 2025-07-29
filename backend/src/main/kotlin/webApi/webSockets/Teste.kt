@@ -40,48 +40,52 @@ fun main() {
     }
 
     while (true) {
-        println("Enter command:")
-        val readCMD = readln().split(" ")
-        val command: GameCommands = when (readCMD[0]) {
-            "MAKE_MOVE" -> {
-                val position1 = readCMD.getOrNull(1)?.toIntOrNull() ?: error("Missing row")
-                val position2 = readCMD.getOrNull(2)?.toIntOrNull() ?: error("Missing column")
-                GameCommands.PlayCommand.MakeMove(player, gameType, TicTacToeMove(position1, position2))
+        try {
+            println("Enter command:")
+            val readCMD = readln().split("/")
+            val command: GameCommands = when (readCMD[0]) {
+                "MAKE_MOVE" -> {
+                    val position1 = readCMD.getOrNull(1)?.toIntOrNull() ?: error("Missing row")
+                    val position2 = readCMD.getOrNull(2)?.toIntOrNull() ?: error("Missing column")
+                    GameCommands.PlayCommand.MakeMove(player, gameType, TicTacToeMove(position1, position2))
+                }
+
+                "RESIGN" -> {
+                    GameCommands.PlayCommand.Resign(player, gameType)
+                }
+
+                "PASS" -> {
+                    GameCommands.PlayCommand.Pass(player, gameType)
+                }
+
+                "OFFER_DRAW" -> {
+                    GameCommands.PlayCommand.OfferDraw(player, gameType)
+                }
+
+                "ACCEPT_DRAW" -> {
+                    GameCommands.PlayCommand.AcceptDraw(player, gameType)
+                }
+
+                "GET_GAME_STATUS" -> {
+                    GameCommands.PlayCommand.GetGameStatus(player, gameType)
+                }
+
+                "REQUEST_MATCH" -> GameCommands.MatchingCommand.RequestMatch(player, gameType)
+                "CANCEL_MATCH_SEARCHING" -> GameCommands.MatchingCommand.CancelMatchSearching(player, gameType)
+                else -> error("Comando desconhecido: $readCMD")
             }
 
-            "RESIGN" -> {
-                GameCommands.PlayCommand.Resign(player, gameType)
+            val roomId = readCMD.getOrNull(3)?.toIntOrNull()
+            val idRoom = if (roomId != null) IdDTO(roomId.toLong()) else null
+            val commandDTO = command.toDTO(idRoom)
+            val json = with(serializer.webSocketResponseSerializer) {
+                commandDTO.toJson()
             }
-
-            "PASS" -> {
-                GameCommands.PlayCommand.Pass(player, gameType)
-            }
-
-            "OFFER_DRAW" -> {
-                GameCommands.PlayCommand.OfferDraw(player, gameType)
-            }
-
-            "ACCEPT_DRAW" -> {
-                GameCommands.PlayCommand.AcceptDraw(player, gameType)
-            }
-
-            "GET_GAME_STATUS" -> {
-                GameCommands.PlayCommand.GetGameStatus(player, gameType)
-            }
-
-            "REQUEST_MATCH" -> GameCommands.MatchingCommand.RequestMatch(player, gameType)
-            "CANCEL_MATCH_SEARCHING" -> GameCommands.MatchingCommand.CancelMatchSearching(player, gameType)
-            else -> error("Comando desconhecido: $readCMD")
+            println("JSON a enviar: $json")
+            ws.send(WsMessage(json))
+        }catch (e: Exception){
+            println(e.message)
         }
-
-        val roomId = readlnOrNull()?.toIntOrNull()
-        val idRoom = if (roomId != null) IdDTO(roomId.toLong()) else null
-        val commandDTO = command.toDTO(idRoom)
-        val json = with(serializer.webSocketResponseSerializer) {
-            commandDTO.toJson()
-        }
-        println("JSON a enviar: $json")
-        ws.send(WsMessage(json))
     }
 }
 

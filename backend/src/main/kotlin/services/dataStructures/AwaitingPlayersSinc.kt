@@ -24,7 +24,7 @@ class AwaitingPlayersSinc (private val timeToLeave : Duration) {
             if (players.isNotEmpty()) {
                 val myMatchedPlayer = players.removeFirst()
                 myMatchedPlayer.matchedPlayer = player
-                myMatchedPlayer.id = Id(Random.nextLong())
+                myMatchedPlayer.id = Id(Random.nextLong(500_000))
                 myMatchedPlayer.condition.signal()
                 return MatchingResult.CreatorSuccess(myMatchedPlayer.player,
                     myMatchedPlayer.id ?: throw IllegalStateException("Player ${myMatchedPlayer.id} not found"))

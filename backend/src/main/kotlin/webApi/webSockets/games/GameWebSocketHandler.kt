@@ -70,7 +70,11 @@ class GameWebSocketHandler(private val gameServices: GameService, serializer : S
         scope.launch {
             if (command is GameCommandsDTO) {
                 logger.info(command.toString() + "COMMAND RECEIVED")
-                val result = gameServices.receiveCmd(command.toDomain())
+
+                val result = if (command is GameCommandsDTO.PlayCommandDTO)
+                    gameServices.receiveCmd(command.toDomain(),command.roomId!!.toDomain())
+                else gameServices.receiveCmd(command.toDomain())
+
                 logger.info("Game command result: $result")
                 when (result) {
                     is CommandResult.ActionResult -> {
