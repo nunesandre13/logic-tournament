@@ -39,7 +39,6 @@ class GameWebSocketHandler(private val gameServices: GameService, serializer : S
             webSocket.onClose {
                 connections -= webSocket
             }
-
             webSocket.onMessage { message ->
                 println("into Logging------------------------------")
                 logger.info(message.body.toString())
@@ -116,6 +115,7 @@ class GameWebSocketHandler(private val gameServices: GameService, serializer : S
             }
         }
     }
+
     private fun heartBeat(channel: Channel<WebSocketMessage>) {
         scope.launch {
             while (true) {

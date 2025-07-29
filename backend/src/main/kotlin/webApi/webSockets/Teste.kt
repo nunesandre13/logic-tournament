@@ -38,12 +38,13 @@ fun main() {
         }
         println("Resposta do servidor: ${it.bodyString()}")
     }
-
+    val commands = listOf("REQUEST_MATCH","CANCEL_MATCH_SEARCHING","MAKE_MOVE","RESIGN","PASS","OFFER_DRAW","ACCEPT_DRAW","GET_GAME_STATUS" )
     while (true) {
         try {
+            printLnCMD(commands)
             println("Enter command:")
             val readCMD = readln().split("/")
-            val command: GameCommands = when (readCMD[0]) {
+            val command: GameCommands = when (commands[readCMD[0].toInt()]) {
                 "MAKE_MOVE" -> {
                     val position1 = readCMD.getOrNull(1)?.toIntOrNull() ?: error("Missing row")
                     val position2 = readCMD.getOrNull(2)?.toIntOrNull() ?: error("Missing column")
@@ -89,6 +90,11 @@ fun main() {
     }
 }
 
+private fun printLnCMD(list: List<String>) {
+    list.forEachIndexed { i, s ->
+        println("($i)$s")
+    }
+}
 private fun handleEvent(event: Event) {
     when (event) {
         is GameDTO -> {
