@@ -1,4 +1,4 @@
-package services
+package services.gameServices
 
 import domain.CancellationMatchMakingResult
 import domain.CommandResult
@@ -8,23 +8,28 @@ import domain.*
 import domain.games.Game
 import domain.games.GameCommands
 import domain.games.GameType
+import services.ServicesInterfaces.IGameServices
+import services.ServicesInterfaces.UserLookUp
 
 class GameService(
-private val matchmakingService: MatchMakingService,
-private val gameRoomManager: GameRoomManager,
-) {
+    private val userLookUp: UserLookUp,
+    private val matchmakingService: MatchMakingService
+): IGameServices {
+    private val  gameRoomManager = matchmakingService.gameRoomManager
+    override fun listAllGames(): List<GameType> = GameType.entries
 
-    fun getStateChange(roomId: Id, gameType: GameType): StateFlow<Game>{
+    override fun getStateChange(roomId: Id, gameType: GameType): StateFlow<Game>{
         return gameRoomManager.collectGameChanges(gameType, roomId)
     }
 
-    fun receiveCmd(command: GameCommands, roomId: Id? = null): CommandResult {
+    override fun receiveCmd(command: GameCommands, roomId: Id?): CommandResult {
+        userLookUp.getUserById(command.player.id) ?: throw IllegalStateException("User $command.player not found") // deve ser feita futuramente
+        // verificao se esta autentificado
         return when (command) {
             is GameCommands.MatchingCommand -> treatMatchCommand(command)
             is GameCommands.PlayCommand -> treatPlayCommand(command,roomId)
         }
     }
-
 
     private fun treatMatchCommand(command: GameCommands.MatchingCommand): CommandResult {
         return when (command) {

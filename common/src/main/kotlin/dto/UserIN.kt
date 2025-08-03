@@ -3,4 +3,4 @@ package dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PlayerDetailsIN (val playerName: String, val email: String)
+data class UserIN (val name: String, val email: String)

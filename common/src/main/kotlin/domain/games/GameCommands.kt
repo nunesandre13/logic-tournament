@@ -4,10 +4,10 @@ import domain.Move
 import domain.Player
 
 sealed interface GameCommands {
+    val player: Player
+    val gameType: GameType
 
     sealed interface MatchingCommand : GameCommands {
-        val player: Player
-        val gameType: GameType
 
         data class RequestMatch(
             override val player: Player,
@@ -21,9 +21,6 @@ sealed interface GameCommands {
     }
 
     sealed interface PlayCommand : GameCommands {
-        val player: Player
-        val gameType: GameType
-
         data class MakeMove(
             override val player: Player,
             override val gameType: GameType,

@@ -1,43 +1,85 @@
-package webApi.webSockets
-
-import Serializers
 import domain.games.GameType
 import domain.Player
 import games.TicTacToe.TicTacToeMove
 import domain.Id
 import domain.games.GameCommands
-import dto.Command
-import dto.Event
-import dto.GameDTO
-import dto.IdDTO
+import dto.*
 import games.TicTacToe.TicTacToeGame
+import org.http4k.client.JavaHttpClient
 import org.http4k.client.WebsocketClient
+import org.http4k.core.Method
+import org.http4k.core.Request
 import org.http4k.core.Uri
 import org.http4k.websocket.WsMessage
+import serializers.UserSerializers.toJson
 import toDTO
-import toDomain
+
+private val gameMappers = GameMappers()
+private val serializer = Serializers
+private const val httpURL = "http://localhost:9000/http"
+private val client = JavaHttpClient()
 
 fun main() {
-    println("Enter Player Name")
-    val playerName = readln()
-    println("Enter Player Id")
-    val id = readln()
-    val player = Player(Id(id.toLong()), playerName)
+    var user : UserOUT? = null
+    while (user == null) {
+        try {
+            user = init()
+            println(user.toJson())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    val player = Player(user.id.toDomain(), user.name)
+    gameHandler(player)
+}
+
+private fun init(): UserOUT{
+    println("1 -> logIn")
+    println("2 -> create")
+    val chose = readln().toInt()
+    return if (chose == 1) logIn()
+    else createUser()
+}
+private fun logIn(): UserOUT{
+    println("insert you user Id")
+    val userID = readln().toInt()
+    val request = Request(Method.GET, Uri.of("$httpURL/users/$userID"))
+        .header("Content-Type", "application/json")
+    val response = client(request)
+    return with(serializer.userSerializer){ response.bodyString().toUserOut()}
+}
+
+private fun createUser(): UserOUT {
+    println("insert you user Name")
+    val userName = readln()
+    println("Insert your Email")
+    val email = readln()
+    val request = Request(Method.POST, Uri.of("$httpURL/users"))
+        .header("Content-Type", "application/json")
+    val userIn = UserIN(userName, email).toJson()
+    println(userIn)
+    request.body(userIn)
+    val response = client(request)
+    println(response.status)
+    val body = response.bodyString()
+    println(body)
+    return with(serializer.userSerializer){ body.toUserOut()}
+}
+
+private fun gameHandler(player: Player){
     val gameType = GameType.TIC_TAC_TOE
-
-    val serializer = Serializers
-    // websocket
-    val ws = WebsocketClient.nonBlocking(Uri.of("ws://localhost:9000/games"))
-
+    val ws = WebsocketClient.nonBlocking(Uri.of("ws://localhost:9000/ws/games"))
     ws.onMessage {
         val result = with(serializer.webSocketResponseSerializer){ it.bodyString().fromJson()}
         when(result){
             is Command -> {}
-            is Event -> { handleEvent(result) }
+            is Event -> {
+                handleEvent(result)
+            }
             else -> {}
         }
-        println("Resposta do servidor: ${it.bodyString()}")
     }
+
     val commands = listOf("REQUEST_MATCH","CANCEL_MATCH_SEARCHING","MAKE_MOVE","RESIGN","PASS","OFFER_DRAW","ACCEPT_DRAW","GET_GAME_STATUS" )
     while (true) {
         try {
@@ -78,7 +120,7 @@ fun main() {
 
             val roomId = readCMD.getOrNull(3)?.toIntOrNull()
             val idRoom = if (roomId != null) IdDTO(roomId.toLong()) else null
-            val commandDTO = command.toDTO(idRoom)
+            val commandDTO = gameMappers.toDTO(command, idRoom)
             val json = with(serializer.webSocketResponseSerializer) {
                 commandDTO.toJson()
             }
@@ -89,20 +131,21 @@ fun main() {
         }
     }
 }
-
 private fun printLnCMD(list: List<String>) {
     list.forEachIndexed { i, s ->
         println("($i)$s")
     }
 }
+
 private fun handleEvent(event: Event) {
     when (event) {
         is GameDTO -> {
-            val game = event.toDomain()
+            val game = gameMappers.toDomain(event)
             if (game is TicTacToeGame) {
                 printBoard(game)
             }
         }
+        is MatchResultDTO.SuccessDTO -> println("your gameRoomId is" + event.roomID)
         else -> {}
     }
 }
@@ -122,4 +165,5 @@ private fun printBoard(game: TicTacToeGame) {
         println()
         println("-------------")
     }
+    println("current player: " + game.currentPlayer.name)
 }

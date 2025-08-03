@@ -1,4 +1,4 @@
-package services
+package services.gameServices
 
 import domain.games.GameType
 import domain.Player
@@ -9,10 +9,10 @@ import services.dataStructures.AwaitingPlayersSinc
 import kotlin.time.Duration.Companion.minutes
 
 class MatchMakingService(
-    private val gameRoomManager: GameRoomManager,
+    val gameRoomManager: GameRoomManager,
     private val gameFactory: IGameFactory
 ) {
-    private val timeToAwait = 1.minutes
+    private val timeToAwait = 2.minutes
     private val waitingPlayers: Map<GameType, AwaitingPlayersSinc> = GameType.entries.associateWith { AwaitingPlayersSinc(timeToAwait) }
 
     fun match(gameType : GameType, player : Player) : MatchMakingResult {
