@@ -1,6 +1,6 @@
 package mappers
 
-import domain.Move
+import domain.games.Move
 import domain.games.Game
 import domain.games.GameActionResult
 import domain.games.GameCommands

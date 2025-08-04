@@ -1,6 +1,6 @@
 package games.TicTacToe
 
-import domain.Move
+import domain.games.Move
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

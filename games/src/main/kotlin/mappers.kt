@@ -1,4 +1,4 @@
-import domain.Move
+import domain.games.Move
 import domain.games.Game
 import domain.games.GameActionResult
 import domain.games.GameCommands
@@ -16,7 +16,6 @@ class GameMappers : IGameMappers {
         is GameActionResultDTO.NotYourTurnDTO -> GameActionResult.NotYourTurn(gameActionResultDTO.message)
         is GameActionResultDTO.GameEndedDTO -> GameActionResult.GameEnded(gameActionResultDTO.message)
         is GameActionResultDTO.InvalidCommandDTO -> GameActionResult.InvalidCommand(gameActionResultDTO.message)
-        else -> throw IllegalArgumentException("Unknown action result type: $gameActionResultDTO")
     }
 
     override fun toDTO(gameActionResult: GameActionResult): GameActionResultDTO = when (gameActionResult) {
@@ -31,7 +30,6 @@ class GameMappers : IGameMappers {
         return when (gameCommandsDTO) {
             is GameCommandsDTO.MatchingCommandDTO -> toMatchCommandDomain(gameCommandsDTO)
             is GameCommandsDTO.PlayCommandDTO -> toPlayCommandDomain(gameCommandsDTO)
-            else -> throw IllegalArgumentException("Unknown command")
         }
     }
 
@@ -48,10 +46,6 @@ class GameMappers : IGameMappers {
                     player = matchingCommandDTO.player.toDomain(),
                     gameType = matchingCommandDTO.gameType
                 )
-
-            else -> {
-                throw IllegalArgumentException("Unknown MatchingCommandDTO type: $matchingCommandDTO")
-            }
         }
     }
 
@@ -93,10 +87,6 @@ class GameMappers : IGameMappers {
                     player = playCommandDTO.player.toDomain(),
                     gameType = playCommandDTO.gameType
                 )
-
-            else -> {
-                throw IllegalArgumentException("Unknown PlayCommandDTO type: $playCommandDTO")
-            }
         }
     }
 
@@ -105,9 +95,6 @@ class GameMappers : IGameMappers {
             is GameResultDTO.Ongoing -> GameResult.Ongoing
             is GameResultDTO.Draw -> GameResult.Draw
             is GameResultDTO.Win -> GameResult.Win(winner = gameResultDTO.winner.toDomain())
-            else -> {
-                throw IllegalArgumentException("Unknown GameResultDTO type: $gameResultDTO")
-            }
         }
     }
 
@@ -119,10 +106,6 @@ class GameMappers : IGameMappers {
                 gameDTO.currentPlayer.toDomain(),
                 toDomain(gameDTO.result)
             )
-
-            else -> {
-                throw IllegalArgumentException("Unknown GameDTO type: $gameDTO")
-            }
         }
     }
 
@@ -188,18 +171,12 @@ class GameMappers : IGameMappers {
     override fun toDTO(move: Move): MoveDTO {
         return when (move) {
             is TicTacToeMove -> MoveDTO.TicTacToeMoveDTO(move.row, move.col)
-            else -> {
-                throw IllegalArgumentException("Unknown Move type: $move")
-            }
         }
     }
 
     override fun toDomain(moveDTO: MoveDTO): Move {
         return when (moveDTO) {
             is MoveDTO.TicTacToeMoveDTO -> TicTacToeMove(moveDTO.row, moveDTO.col)
-            else -> {
-                throw IllegalArgumentException("Unknown MoveDTO type: $moveDTO")
-            }
         }
     }
 
@@ -219,10 +196,6 @@ class GameMappers : IGameMappers {
                 game.currentPlayer.toDTO(),
                 toDTO(game.result)
             )
-
-            else -> {
-                throw IllegalArgumentException("Unknown Game type: $game")
-            }
         }
     }
 }

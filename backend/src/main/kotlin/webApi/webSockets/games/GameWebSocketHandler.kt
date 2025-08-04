@@ -5,7 +5,6 @@ import domain.CommandResult
 import kotlinx.coroutines.channels.Channel
 import org.http4k.routing.websockets
 import org.http4k.websocket.Websocket
-import services.gameServices.GameService
 import java.util.concurrent.CopyOnWriteArrayList
 import dto.*
 import kotlinx.coroutines.*
@@ -54,7 +53,6 @@ class GameWebSocketHandler(
                     is Command -> treatCommandResponse(response, channel)
                     is Event -> treatEventResponse(response, channel)
                     is Data -> {}
-                    else -> {}
                 }
             }
             webSocket.onError {
@@ -69,7 +67,8 @@ class GameWebSocketHandler(
                 logger.info("HEARTBEAT: ${event.timestamp}")
             }
             is MessageEvent -> TODO()
-            else -> TODO()
+            is GameDTO -> TODO()
+            is MatchResultDTO -> TODO()
         }
     }
 
@@ -85,9 +84,7 @@ class GameWebSocketHandler(
                     is GameCommandsDTO.MatchingCommandDTO -> {
                         gameServices.receiveCmd(mappers.toMatchCommandDomain(command), null)
                     }
-                    else -> gameServices.receiveCmd(mappers.toDomain(command))
                 }
-
 
                 logger.info("Game command result: $result")
                 when (result) {

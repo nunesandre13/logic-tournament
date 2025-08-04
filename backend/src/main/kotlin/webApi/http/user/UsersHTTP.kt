@@ -11,7 +11,6 @@ import org.http4k.core.Status.Companion.OK
 import org.slf4j.LoggerFactory
 import serializers.UserSerializers.toJson
 import services.ServicesInterfaces.IUsersServices
-import toDomain
 import toOUT
 import webApi.http.runCatchingResponse
 

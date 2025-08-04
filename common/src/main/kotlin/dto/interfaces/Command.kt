@@ -1,3 +1,4 @@
 package dto
 
-sealed interface Command: WebSocketMessage
+
+sealed interface Command : WebSocketMessage

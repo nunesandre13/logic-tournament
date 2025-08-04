@@ -75,7 +75,7 @@ private fun gameHandler(player: Player){
             is Event -> {
                 handleEvent(result)
             }
-            else -> {}
+            is Data -> {}
         }
     }
 
@@ -145,7 +145,9 @@ private fun handleEvent(event: Event) {
             }
         }
         is MatchResultDTO.SuccessDTO -> println("your gameRoomId is" + event.roomID)
-        else -> {}
+        is HeartBeat -> TODO()
+        is MatchResultDTO.FailureDTO -> TODO()
+        is MessageEvent -> TODO()
     }
 }
 

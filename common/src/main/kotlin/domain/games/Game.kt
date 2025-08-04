@@ -1,10 +1,9 @@
 package domain.games
 
-import domain.Move
 import domain.Player
 
 
-interface Game {
+sealed interface Game {
     val gameType: GameType
     val players: List<Player>
     val result : GameResult
