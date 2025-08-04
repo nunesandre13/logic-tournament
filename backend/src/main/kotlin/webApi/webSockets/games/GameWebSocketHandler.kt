@@ -52,7 +52,7 @@ class GameWebSocketHandler(
                 when (response) {
                     is Command -> treatCommandResponse(response, channel)
                     is Event -> treatEventResponse(response, channel)
-                    is Data -> {}
+                    is Data -> treatDataResponse(response, channel)
                 }
             }
             webSocket.onError {
@@ -61,12 +61,22 @@ class GameWebSocketHandler(
         }(request)
     }
 
+    private fun treatDataResponse(data: Data,channel: Channel<WebSocketMessage>) {
+        when (data) {
+            is GameActionResultDTO.GameEndedDTO -> TODO()
+            is GameActionResultDTO.InvalidCommandDTO -> TODO()
+            is GameActionResultDTO.InvalidMoveDTO -> TODO()
+            is GameActionResultDTO.NotYourTurnDTO -> TODO()
+            is GameActionResultDTO.SuccessDTO -> TODO()
+        }
+    }
+
     private fun treatEventResponse(event: Event, channel: Channel<WebSocketMessage>) {
         when (event) {
             is HeartBeat -> {
                 logger.info("HEARTBEAT: ${event.timestamp}")
             }
-            is MessageEvent -> TODO()
+            is MessageEvent -> {}
             is GameDTO -> TODO()
             is MatchResultDTO -> TODO()
         }
