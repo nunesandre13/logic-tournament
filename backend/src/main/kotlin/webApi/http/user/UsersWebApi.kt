@@ -34,7 +34,7 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
     }
 
     private fun createUser(request: Request) = runCatchingResponse(CREATED) {
-        logger.debug("Creating user ${request.path("id")}")
+        logger.debug("body String ${request.bodyString()}")
         val userReq: UserIN = with(serializer.userSerializer) { request.bodyString().toUserIn() }
         with(serializer.userSerializer){service.createUser(userReq.name,userReq.email).toOUT().toJson()}
     }

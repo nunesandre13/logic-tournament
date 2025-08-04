@@ -1,7 +1,6 @@
 import domain.games.GameType
 import domain.Player
 import games.TicTacToe.TicTacToeMove
-import domain.Id
 import domain.games.GameCommands
 import dto.*
 import games.TicTacToe.TicTacToeGame
@@ -12,7 +11,6 @@ import org.http4k.core.Request
 import org.http4k.core.Uri
 import org.http4k.websocket.WsMessage
 import serializers.UserSerializers.toJson
-import toDTO
 
 private val gameMappers = GameMappers()
 private val serializer = Serializers
@@ -54,11 +52,12 @@ private fun createUser(): UserOUT {
     val userName = readln()
     println("Insert your Email")
     val email = readln()
-    val request = Request(Method.POST, Uri.of("$httpURL/users"))
-        .header("Content-Type", "application/json")
     val userIn = UserIN(userName, email).toJson()
     println(userIn)
-    request.body(userIn)
+    val request = Request(Method.POST, Uri.of("$httpURL/users/"))
+        .header("Content-Type", "application/json")
+        .body(userIn)
+    println("body to send " + request.bodyString())
     val response = client(request)
     println(response.status)
     val body = response.bodyString()

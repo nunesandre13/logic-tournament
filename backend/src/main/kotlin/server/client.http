@@ -1,0 +1,12 @@
+POST http://localhost:9000/http/users/
+Content-Type: application/json
+
+{
+  "name": "Admin",
+  "email": "Admin@isel.ipl.pt"
+}
+
+###
+GET http://localhost:9000/http/users/
+Content-Type: application/json
+

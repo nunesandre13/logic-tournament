@@ -12,7 +12,7 @@ class UserDataMem: UserData {
     override fun findById(id: Long): User? = players[id]
 
     override fun save(userName: String, email: String): User {
-        val id = Random.nextLong()
+        val id = Random.nextLong(1,1000000000)
         val user = User(Id(id), userName, Email(email))
         players[id] = user
         return user
