@@ -1,8 +1,10 @@
 package webApi.http.user
 
 import Serializers
+import auth.AuthService
+import domain.Email
 import domain.Id
-import dto.UserIN
+import dto.UserCreationDTO
 import org.http4k.core.*
 import org.http4k.routing.*
 import org.http4k.core.Method.POST
@@ -14,7 +16,7 @@ import services.ServicesInterfaces.IUsersServices
 import toOUT
 import webApi.http.runCatchingResponse
 
-class UsersHTTP(private val service: IUsersServices, private val serializer: Serializers) {
+class UsersHTTP(private val service: IUsersServices, private val serializer: Serializers, private val authService: AuthService) {
 
     private val logger = LoggerFactory.getLogger(UsersHTTP::class.java)
 
@@ -32,9 +34,19 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
         with(serializer.userSerializer){ service.listUsers().map { it.toOUT() }.toJson()}
     }
 
+
+    // deve retornar tokens de acesso
     private fun createUser(request: Request) = runCatchingResponse(CREATED) {
         logger.debug("body String ${request.bodyString()}")
-        val userReq: UserIN = with(serializer.userSerializer) { request.bodyString().toUserIn() }
-        with(serializer.userSerializer){service.createUser(userReq.name,userReq.email).toOUT().toJson()}
+        val userReq: UserCreationDTO = with(serializer.userSerializer) { request.bodyString().toUserIn() }
+        with(serializer.userSerializer){service.createUser(userReq.name, Email(userReq.email),userReq.password).toOUT().toJson()}
     }
+
+    private fun logIn(request: Request) = runCatchingResponse(OK) {
+        val logData = with(serializer.userSerializer) { request.bodyString().toLogInUser() }
+        if (service.authenticate(logData.email,logData.password)){
+            kotlinx.serialization.json.Json.encodeToString(authService.generateTokens(logData.email)) // to be removed
+        } else throw IllegalStateException("")
+    }
+
 }

@@ -3,4 +3,4 @@ package dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserIN (val name: String, val email: String)
+data class TokenDTO(val accessToken: String, val refreshToken: String)
