@@ -17,7 +17,7 @@ class WebApi(services: IServices, serializers: Serializers, gameMapper: IGameMap
     private val authFilter = AuthFilter(authService)
     private val wsGamesRoutes = GamesWebSocketRoutes(GameWebSocketHandler(services.gameService,serializers, gameMapper))
     private val wsRoutes = WebSocketRoutes(wsGamesRoutes, authFilter)
-    private val httpRoutes = HTTPRoutes(services,serializers,authFilter)
+    private val httpRoutes = HTTPRoutes(services,serializers,authFilter,authService)
     val routes = poly(
         "/ws" bindWs wsRoutes.routes,
         "/http" bindHttp httpRoutes.routes

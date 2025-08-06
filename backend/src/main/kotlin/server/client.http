@@ -2,11 +2,15 @@ POST http://localhost:9000/http/users/
 Content-Type: application/json
 
 {
-  "name": "Admin",
-  "email": "Admin@isel.ipl.pt"
+  "name": "Admin11",
+  "email": "Admin@isel.ipl.pt11",
+  "password": "123411"
 }
 
 ###
 GET http://localhost:9000/http/users/
 Content-Type: application/json
 
+###
+GET http://localhost:9000/http/games/
+Content-Type: application/json

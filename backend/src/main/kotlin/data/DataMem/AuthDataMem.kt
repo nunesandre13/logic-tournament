@@ -3,16 +3,18 @@ package data.DataMem
 import data.dataInterfaces.AuthData
 import domain.RefreshToken
 
-class AuthDataMem: AuthData {
+class AuthDataMem : AuthData {
+    private val tokens = mutableMapOf<String, RefreshToken>()
+
     override fun save(token: RefreshToken) {
-        TODO("Not yet implemented")
+        tokens[token.token] = token
     }
 
     override fun findByToken(token: String): RefreshToken? {
-        TODO("Not yet implemented")
+        return tokens[token]
     }
 
     override fun deleteByToken(token: String) {
-        TODO("Not yet implemented")
+        tokens.remove(token)
     }
 }

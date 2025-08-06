@@ -171,6 +171,7 @@ class GameMappers : IGameMappers {
     override fun toDTO(move: Move): MoveDTO {
         return when (move) {
             is TicTacToeMove -> MoveDTO.TicTacToeMoveDTO(move.row, move.col)
+            else -> TODO()
         }
     }
 
@@ -196,6 +197,7 @@ class GameMappers : IGameMappers {
                 game.currentPlayer.toDTO(),
                 toDTO(game.result)
             )
+            else -> TODO()
         }
     }
 }

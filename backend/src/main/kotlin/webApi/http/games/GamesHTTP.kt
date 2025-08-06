@@ -1,7 +1,7 @@
 package webApi.http.games
 
 import kotlinx.serialization.json.Json
-import org.http4k.core.Method.POST
+import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.bind
@@ -11,7 +11,7 @@ import webApi.http.runCatchingResponse
 
 class GamesHTTP(private val services: IGameServices) {
     val routes = routes(
-        "/" bind POST to ::listAllGames,
+        "/" bind Method.GET to ::listAllGames,
     )
 
     private fun listAllGames(request: Request) = runCatchingResponse(OK){

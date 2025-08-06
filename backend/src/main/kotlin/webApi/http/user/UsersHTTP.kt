@@ -4,7 +4,9 @@ import Serializers
 import auth.AuthService
 import domain.Email
 import domain.Id
+import dto.UserCreatedDTO
 import dto.UserCreationDTO
+import kotlinx.serialization.json.Json
 import org.http4k.core.*
 import org.http4k.routing.*
 import org.http4k.core.Method.POST
@@ -13,6 +15,7 @@ import org.http4k.core.Status.Companion.OK
 import org.slf4j.LoggerFactory
 import serializers.UserSerializers.toJson
 import services.ServicesInterfaces.IUsersServices
+import toDTO
 import toOUT
 import webApi.http.runCatchingResponse
 
@@ -20,10 +23,14 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
 
     private val logger = LoggerFactory.getLogger(UsersHTTP::class.java)
 
-    val routes = routes(
-        "/" bind POST to ::createUser,
+    val protectedRoutes = routes(
         "/" bind Method.GET to ::getAllUsers,
         "{id}" bind Method.GET to ::getUserById,
+        "auth" bind Method.PUT to ::logIn
+    )
+
+    val nonProtectedRoutes = routes(
+        "/" bind POST to ::createUser,
     )
 
     private fun getUserById(request: Request) = runCatchingResponse(OK){
@@ -37,15 +44,17 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
 
     // deve retornar tokens de acesso
     private fun createUser(request: Request) = runCatchingResponse(CREATED) {
-        logger.debug("body String ${request.bodyString()}")
+        logger.info("body String ${request.bodyString()}")
         val userReq: UserCreationDTO = with(serializer.userSerializer) { request.bodyString().toUserIn() }
-        with(serializer.userSerializer){service.createUser(userReq.name, Email(userReq.email),userReq.password).toOUT().toJson()}
+        val userCreated = service.createUser(userReq.name, Email(userReq.email),userReq.password).toOUT()
+        val userResponse = UserCreatedDTO(userCreated,authService.generateTokens(userReq.email).toDTO())
+        Json.encodeToString(userResponse)
     }
 
     private fun logIn(request: Request) = runCatchingResponse(OK) {
         val logData = with(serializer.userSerializer) { request.bodyString().toLogInUser() }
         if (service.authenticate(logData.email,logData.password)){
-            kotlinx.serialization.json.Json.encodeToString(authService.generateTokens(logData.email)) // to be removed
+            Json.encodeToString(authService.generateTokens(logData.email)) // to be removed
         } else throw IllegalStateException("")
     }
 

@@ -52,7 +52,7 @@ private fun createUser(): UserOUT {
     val userName = readln()
     println("Insert your Email")
     val email = readln()
-    val userIn = UserCreationDTO(userName, email).toJson()
+    val userIn = UserCreationDTO(userName, email, "1234").toJson()
     println(userIn)
     val request = Request(Method.POST, Uri.of("$httpURL/users/"))
         .header("Content-Type", "application/json")
