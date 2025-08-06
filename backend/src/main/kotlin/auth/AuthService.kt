@@ -37,6 +37,7 @@ class AuthService(
         authData.deleteByToken(token)
     }
 
+    // should return a boolean
     fun verifyRefreshToken(token: String): Email {
         val refreshToken = authData.findByToken(token)
             ?: throw Exception("Refresh token não encontrado")

@@ -8,12 +8,14 @@ import org.http4k.websocket.WsFilter
 import org.http4k.websocket.WsHandler
 import org.http4k.websocket.WsMessage
 import org.http4k.websocket.WsResponse
+import org.slf4j.LoggerFactory
 
 class AuthFilter(private val authService: AuthService) {
-
+    private val logger = LoggerFactory.getLogger(AuthFilter::class.java)
     val filterHTTP = Filter { next: HttpHandler ->
         { request ->
             val token = request.header("Authorization")?.substringAfter("Bearer ")
+            logger.info(token)
             if (token == null) {
                 Response(Status.UNAUTHORIZED).body("Token não fornecido.")
             } else {

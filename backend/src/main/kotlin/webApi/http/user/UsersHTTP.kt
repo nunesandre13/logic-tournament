@@ -25,13 +25,20 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
 
     val protectedRoutes = routes(
         "/" bind Method.GET to ::getAllUsers,
-        "{id}" bind Method.GET to ::getUserById,
-        "auth" bind Method.PUT to ::logIn
+        "{id}" bind Method.GET to ::getUserById
     )
 
     val nonProtectedRoutes = routes(
         "/" bind POST to ::createUser,
+        "auth" bind Method.PUT to ::logIn,
+        "/auth/refresh" bind POST to ::refreshToken
     )
+
+    private fun refreshToken(request: Request) = runCatchingResponse(CREATED) {
+        val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
+        val email = authService.verifyRefreshToken(token)
+        authService.generateAndSaveRefreshToken(email.email)
+    }
 
     private fun getUserById(request: Request) = runCatchingResponse(OK){
         service.getUserById(Id(request.path("id")?.toLong()?: throw IllegalStateException()))?.toOUT()?.toJson() ?: throw IllegalStateException()
@@ -54,7 +61,7 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
     private fun logIn(request: Request) = runCatchingResponse(OK) {
         val logData = with(serializer.userSerializer) { request.bodyString().toLogInUser() }
         if (service.authenticate(logData.email,logData.password)){
-            Json.encodeToString(authService.generateTokens(logData.email)) // to be removed
+            Json.encodeToString(authService.generateTokens(logData.email).toDTO()) // to be removed
         } else throw IllegalStateException("")
     }
 

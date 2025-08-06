@@ -8,8 +8,18 @@ Content-Type: application/json
 }
 
 ###
+PUT http://localhost:9000/http/users/auth
+Content-Type: application/json
+
+{
+  "email": "Admin@isel.ipl.pt11",
+  "password": "123411"
+}
+
+###
 GET http://localhost:9000/http/users/
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBTkRSRU5VTkVTQVBJIiwidXNlckVtYWlsIjoiQWRtaW5AaXNlbC5pcGwucHQxMSIsImV4cCI6MTc1NDUyMjY0MX0.YpFh9aH7X5XQZkhAlJMbaSqLGF6VbMUjsdQDZ_9mbaw
 
 ###
 GET http://localhost:9000/http/games/
