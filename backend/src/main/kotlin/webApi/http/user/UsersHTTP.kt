@@ -37,7 +37,7 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
     private fun refreshToken(request: Request) = runCatchingResponse(CREATED) {
         val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
         val email = authService.verifyRefreshToken(token)
-        authService.generateAndSaveRefreshToken(email.email)
+        authService.generateAccessToken(email.email)
     }
 
     private fun getUserById(request: Request) = runCatchingResponse(OK){
