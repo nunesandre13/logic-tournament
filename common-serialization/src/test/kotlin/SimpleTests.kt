@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import domain.Id
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import serialization.AppJson
 
 class SimpleTests {
 

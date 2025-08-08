@@ -4,6 +4,7 @@ import Serializers
 import auth.AuthService
 import domain.Email
 import domain.Id
+import dto.TokenDTO
 import dto.UserCreatedDTO
 import dto.UserCreationDTO
 import kotlinx.serialization.json.Json
@@ -37,7 +38,7 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
     private fun refreshToken(request: Request) = runCatchingResponse(CREATED) {
         val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
         val email = authService.verifyRefreshToken(token)
-        authService.generateAccessToken(email.email)
+        Json.encodeToString(TokenDTO(authService.generateAccessToken(email.email),token))
     }
 
     private fun getUserById(request: Request) = runCatchingResponse(OK){

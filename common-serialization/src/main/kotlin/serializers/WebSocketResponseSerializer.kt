@@ -1,6 +1,6 @@
 package serializers
 
-import AppJson
+import serialization.AppJson
 import dto.WebSocketMessage
 import kotlinx.serialization.encodeToString
 

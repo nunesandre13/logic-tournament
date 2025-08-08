@@ -1,3 +1,5 @@
+package serialization
+
 import dto.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -40,35 +42,5 @@ val AppJson = Json {
             subclass(MatchResultDTO.SuccessDTO::class)
             subclass(MatchResultDTO.FailureDTO::class)
         }
-
-
-//        polymorphic(Command::class) {
-//            subclass(GameCommandsDTO.MatchingCommandDTO::class) // Register the sealed interface
-//            subclass(GameCommandsDTO.PlayCommandDTO::class) // Register the sealed interface
-//        }
-//
-//        polymorphic(GameCommandsDTO.MatchingCommandDTO::class) {
-//            subclass(GameCommandsDTO.MatchingCommandDTO.RequestMatch::class)
-//            subclass(GameCommandsDTO.MatchingCommandDTO.CancelMatchSearchingDTO::class)
-//        }
-//
-//        polymorphic(GameCommandsDTO.PlayCommandDTO::class) {
-//            subclass(GameCommandsDTO.PlayCommandDTO.MakeMove::class)
-//            subclass(GameCommandsDTO.PlayCommandDTO.Resign::class)
-//            subclass(GameCommandsDTO.PlayCommandDTO.Pass::class)
-//            subclass(GameCommandsDTO.PlayCommandDTO.OfferDraw::class)
-//            subclass(GameCommandsDTO.PlayCommandDTO.AcceptDraw::class)
-//            subclass(GameCommandsDTO.PlayCommandDTO.GetGameStatus::class)
-//        }
-//
-//        polymorphic(GameResultDTO::class) {
-//            subclass(GameResultDTO.Ongoing::class)
-//            subclass(GameResultDTO.Draw::class)
-//            subclass(GameResultDTO.Win::class)
-//        }
-//
-//        polymorphic(MoveDTO::class) {
-//            subclass(MoveDTO.TicTacToeMoveDTO::class)
-//        }
     }
 }
