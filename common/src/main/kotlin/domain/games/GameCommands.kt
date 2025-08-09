@@ -1,6 +1,5 @@
 package domain.games
 
-import domain.games.Move
 import domain.Player
 
 sealed interface GameCommands {

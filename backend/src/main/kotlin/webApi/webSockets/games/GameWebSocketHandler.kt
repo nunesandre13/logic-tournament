@@ -61,7 +61,7 @@ class GameWebSocketHandler(
         }(request)
     }
 
-    private fun treatDataResponse(data: Data,channel: Channel<WebSocketMessage>) {
+    private fun treatDataResponse(data: Data, channel: Channel<WebSocketMessage>) {
         when (data) {
             is GameActionResultDTO.GameEndedDTO -> TODO()
             is GameActionResultDTO.InvalidCommandDTO -> TODO()
@@ -79,6 +79,8 @@ class GameWebSocketHandler(
             is MessageEvent -> {}
             is GameDTO -> TODO()
             is MatchResultDTO -> TODO()
+            is ConnectionClosed -> TODO()
+            is ConnectionOpened -> TODO()
         }
     }
 

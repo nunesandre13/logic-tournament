@@ -1,45 +1,26 @@
 package com.example.app.model.apiService
 
-import Serializers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.flow.consumeAsFlow
 
 class WebSocketService<T>(
-    private val serializable: Serializers,
-    private val scope: CoroutineScope
+    private val bufferCapacity: Int = Channel.UNLIMITED
 ) {
-    private val incomingMessages = MutableSharedFlow<T>()
+    private val messagesFromSocket = MutableSharedFlow<T>()
+    private val messagesToSocket = Channel<T>(bufferCapacity)
 
-    private val sendChannel = Channel<T>(Channel.UNLIMITED)
+    // App → Socket
+    suspend fun sendToSocket(message: T) = messagesToSocket.send(message)
+    fun fromApp(): Flow<T> = messagesToSocket.consumeAsFlow()
 
-    val incoming: SharedFlow<T> get() = incomingMessages
-
-    init {
-        scope.launch {
-            incomingMessages.collect {
-                incomingMessages.emit(it)
-            }
-        }
-    }
-
-    suspend fun sendMessage(message: T) {
-        sendChannel.send(message)
-    }
-
-    fun onMessage(text: String) {
-        val message = json.decodeFromString(serializer, text)
-        scope.launch {
-            incomingMessages.emit(message)
-        }
-    }
+    // Socket → App
+    suspend fun sendToApp(message: T) = messagesFromSocket.emit(message)
+    fun fromSocket(): SharedFlow<T> = messagesFromSocket
 
     fun close() {
-        sendChannel.close()
-        webSocket.close(1000, "Fechando conexão")
-        scope.cancel()
+        messagesToSocket.close()
     }
 }

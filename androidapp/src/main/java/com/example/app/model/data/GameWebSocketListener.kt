@@ -1,33 +1,53 @@
 package com.example.app.model.data
 
+import Serializers
 import com.example.app.model.apiService.WebSocketService
+import dto.ConnectionClosed
+import dto.ConnectionOpened
 import dto.WebSocketMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import okio.ByteString
 
-class GameWebSocketListener(private val service: WebSocketService<WebSocketMessage>) : WebSocketListener() {
+class GameWebSocketListener(private val service: WebSocketService<WebSocketMessage>, val serializer: Serializers) : WebSocketListener() {
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     override fun onOpen(webSocket: WebSocket, response: Response) {
-        println("Ligado ao servidor WebSocket")
-
+        scope.launch {
+            service.sendToApp(ConnectionOpened("CONNECTED!"))
+            service.fromApp().collect { response ->
+                val json = with(serializer.webSocketResponseSerializer) { response.toJson() }
+                webSocket.send(json)
+            }
+        }
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
-        println("Recebido texto: $text")
-
-    }
-
-    override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-
+        scope.launch {
+            service.sendToApp(with(serializer.webSocketResponseSerializer) { text.fromJson() })
+        }
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-        println(" A fechar ligação: $code / $reason")
-        webSocket.close(1000, null)
+        scope.launch {
+            service.sendToApp(ConnectionClosed("CLOSING!"))
+        }
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        println(" Erro no WebSocket: ${t.message}")
+        scope.launch {
+            service.sendToApp(ConnectionClosed("FAILED!"))
+        }
+        scope.cancel()
+    }
+
+    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+        scope.cancel()
     }
 }
