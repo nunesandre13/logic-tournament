@@ -1,4 +1,0 @@
-package domain
-
-interface DomainModel {
-}

@@ -1,5 +1,4 @@
 package com.example.app.model.data
-
 import Serializers
 import com.example.app.model.apiService.WebSocketService
 import dto.ConnectionClosed

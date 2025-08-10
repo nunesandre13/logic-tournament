@@ -36,11 +36,15 @@ val AppJson = Json {
 
             // Events
             // Register the Event interface as a subclass of WebSocketResponse
-            subclass(HeartBeat::class)
             subclass(MessageEvent::class)
             subclass(GameDTO.TicTacToeGameDTO::class)
             subclass(MatchResultDTO.SuccessDTO::class)
             subclass(MatchResultDTO.FailureDTO::class)
+
+            // ProtocolMessage
+            subclass(HeartBeat::class)
+            subclass(ConnectionClosed::class)
+            subclass(ConnectionOpened::class)
         }
     }
 }

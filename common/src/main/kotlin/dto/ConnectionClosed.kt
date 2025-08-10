@@ -1,3 +1,3 @@
 package dto
 
-class ConnectionClosed(reason: String) : Event
+class ConnectionClosed(reason: String) : ProtocolMessage
