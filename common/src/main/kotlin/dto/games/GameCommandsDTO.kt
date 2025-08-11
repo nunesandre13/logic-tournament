@@ -6,6 +6,7 @@ import domain.games.GameType
 
 @Serializable
 sealed interface GameCommandsDTO : Command {
+
     // --- Comandos de Matchmaking ---
     @Serializable
     @SerialName("MatchingCommandDTO")
@@ -31,7 +32,7 @@ sealed interface GameCommandsDTO : Command {
     // --- Comandos de Jogo ---
     @Serializable
     @SerialName("PlayCommand_DTO")
-    sealed interface PlayCommandDTO : GameCommandsDTO    {
+    sealed interface PlayCommandDTO : GameCommandsDTO {
         val player: PlayerDTO
         val gameType: GameType
         val roomId: IdDTO?

@@ -1,6 +1,6 @@
 package domain.games
 
-sealed class GameActionResult {
+sealed class GameActionResult: GameData {
     data class Success(val game: Game) : GameActionResult()
     data class InvalidMove(val message: String) : GameActionResult()
     data class NotYourTurn(val message: String) : GameActionResult()

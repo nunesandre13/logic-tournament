@@ -1,10 +1,9 @@
-package com.example.app.model.retrofit
-import serialization.AppJson
-import com.example.app.model.apiService.ApiServiceUsers
+package com.example.app.model.data.http
+
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-
+import serialization.AppJson
 
 object RetrofitClient {
     private const val BASE_URL = "http://localhost:9000/http/" // should be on a .env

@@ -5,7 +5,6 @@ import domain.Player
 sealed interface GameCommands {
     val player: Player
     val gameType: GameType
-
     sealed interface MatchingCommand : GameCommands {
 
         data class RequestMatch(

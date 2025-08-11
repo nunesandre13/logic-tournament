@@ -1,6 +1,5 @@
-package com.example.app.model.data
+package com.example.app.model.data.http
 
-import com.example.app.model.apiService.ApiServiceUsers
 import dto.LogInUserDTO
 import dto.TokenDTO
 import dto.UserCreatedDTO

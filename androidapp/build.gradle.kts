@@ -35,6 +35,7 @@ dependencies {
 
     implementation(project(":common-serialization"))
     implementation(project(":common"))
+    implementation(project(":games"))
 
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")

@@ -3,7 +3,7 @@ package domain.games
 import domain.Player
 
 
-interface Game {
+interface Game: GameEvent {
     val gameType: GameType
     val players: List<Player>
     val result : GameResult

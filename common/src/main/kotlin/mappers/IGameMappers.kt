@@ -4,10 +4,18 @@ import domain.games.Move
 import domain.games.Game
 import domain.games.GameActionResult
 import domain.games.GameCommands
+import domain.games.GameData
+import domain.games.GameEvent
 import domain.games.GameResult
 import dto.*
 
 interface IGameMappers {
+    fun toDomain(event: GameEventDTO): GameEvent
+    fun toDTO(eventDTO: GameEvent): GameEventDTO
+
+    fun toDomain(data: GameDataDTO): GameData
+    fun toDTO(data: GameData): GameDataDTO
+
     fun toDomain(gameActionResultDTO: GameActionResultDTO): GameActionResult
     fun toDTO(gameActionResult: GameActionResult): GameActionResultDTO
 

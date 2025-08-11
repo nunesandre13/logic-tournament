@@ -1,7 +1,9 @@
-package com.example.app.model.apiService
+package com.example.app.model.data.webSocket
 
 import WebSocketMessageService
 import domain.games.GameCommands
+import domain.games.GameData
+import domain.games.GameEvent
 import dto.GameCommandsDTO
 import dto.GameDataDTO
 import dto.GameEventDTO
@@ -9,31 +11,33 @@ import dto.ProtocolMessage
 import dto.WebSocketMessage
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import mappers.IGameMappers
 
-class WsGamesMessages : WebSocketMessageService<GameCommandsDTO, GameDataDTO, GameEventDTO> {
+class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageService<GameCommandsDTO, GameDataDTO, GameEventDTO> {
 
     private val _events = MutableSharedFlow<GameEvent>()
-    val events: SharedFlow<GameEventDTO> = _events
+    val events: SharedFlow<GameEvent> = _events
 
     private val _data = MutableSharedFlow<GameData>()
-    val data: SharedFlow<GameDataDTO> = _data
+    val data: SharedFlow<GameData> = _data
 
     private val _commands = MutableSharedFlow<GameCommands>()
     val commands: SharedFlow<GameCommands> = _commands
 
     override fun onCommand(command: GameCommandsDTO) {
-        val domainCommand = command.toDomain()
+        val domainCommand = mappers.toDomain(command)
         _commands.tryEmit(domainCommand)
     }
 
     override fun onData(data: GameDataDTO) {
-        val domainData = data.toDomain()
+        val domainData = mappers.toDomain(data)
         _data.tryEmit(domainData)
     }
     override fun onEvent(event: GameEventDTO) {
-        val domainEvent = event.toDomain()
+        val domainEvent = mappers.toDomain(event)
         _events.tryEmit(domainEvent)
     }
+
     override fun onProtocol(message: ProtocolMessage) {
         TODO("Not yet implemented")
     }
@@ -41,7 +45,5 @@ class WsGamesMessages : WebSocketMessageService<GameCommandsDTO, GameDataDTO, Ga
     override fun onOther(message: WebSocketMessage) {
         TODO("Not yet implemented")
     }
-
-
 
 }

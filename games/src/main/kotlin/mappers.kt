@@ -2,6 +2,8 @@ import domain.games.Move
 import domain.games.Game
 import domain.games.GameActionResult
 import domain.games.GameCommands
+import domain.games.GameData
+import domain.games.GameEvent
 import domain.games.GameResult
 import dto.*
 import games.TicTacToe.TicTacToeGame
@@ -10,6 +12,30 @@ import mappers.IGameMappers
 
 
 class GameMappers : IGameMappers {
+    override fun toDomain(event: GameEventDTO): GameEvent {
+        when (event) {
+            is GameDTO -> return toDomain(event)
+        }
+    }
+
+    override fun toDTO(eventDTO: GameEvent): GameEventDTO {
+        when (eventDTO) {
+            is Game -> return toDTO(eventDTO)
+        }
+    }
+
+    override fun toDomain(data: GameDataDTO): GameData {
+        when (data) {
+            is GameActionResultDTO -> return toDomain(data)
+        }
+    }
+
+    override fun toDTO(data: GameData): GameDataDTO {
+        when (data) {
+            is GameActionResult -> return toDTO(data)
+        }
+    }
+
     override fun toDomain(gameActionResultDTO: GameActionResultDTO): GameActionResult = when (gameActionResultDTO) {
         is GameActionResultDTO.SuccessDTO -> GameActionResult.Success(toDomain(gameActionResultDTO.game))
         is GameActionResultDTO.InvalidMoveDTO -> GameActionResult.InvalidMove(gameActionResultDTO.message)

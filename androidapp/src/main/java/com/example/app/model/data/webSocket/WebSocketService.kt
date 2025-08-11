@@ -1,4 +1,4 @@
-package com.example.app.model.apiService
+package com.example.app.model.data.webSocket
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 
 class WebSocketService<T>(
-    private val bufferCapacity: Int = Channel.UNLIMITED
+    private val bufferCapacity: Int = Channel.Factory.UNLIMITED
 ) {
     private val messagesFromSocket = MutableSharedFlow<T>()
     private val messagesToSocket = Channel<T>(bufferCapacity)

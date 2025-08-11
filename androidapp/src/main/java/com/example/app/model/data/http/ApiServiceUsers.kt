@@ -1,4 +1,4 @@
-package com.example.app.model.apiService
+package com.example.app.model.data.http
 
 import dto.LogInUserDTO
 import dto.TokenDTO

@@ -1,6 +1,6 @@
-package com.example.app.model.data
+package com.example.app.model.data.webSocket
+
 import Serializers
-import com.example.app.model.apiService.WebSocketService
 import dto.ConnectionClosed
 import dto.ConnectionOpened
 import dto.WebSocketMessage
