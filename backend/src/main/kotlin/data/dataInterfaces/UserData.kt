@@ -10,5 +10,5 @@ interface UserData {
 
     fun findAll(): List<User>
 
-    fun getUserPassWordHash(email: Email): ByteArray?
+    fun getUserPassWordHash(email: Email): Pair<User, ByteArray>?
 }

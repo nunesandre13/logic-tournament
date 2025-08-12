@@ -20,9 +20,9 @@ fun UserScreen(viewModel: UserViewModel) {
     Surface(modifier = Modifier.fillMaxSize()) {
         when (userState) {
             is UserStateUI.LoggedIn -> {
-                val user = (userState as UserStateUI.LoggedIn).user
+                val userAuth = (userState as UserStateUI.LoggedIn).user
                 LoggedInView(
-                    user = user,
+                    user = userAuth.user,
                     onLogoutClicked = { viewModel.logout() }
                 )
             }
@@ -65,4 +65,4 @@ fun UserScreen(viewModel: UserViewModel) {
     }
 }
 
-enum class ClickStatus {LOGIN_CLICKED,CRATED_CLICKED, NO_CLICKED}
+enum class ClickStatus {LOGIN_CLICKED, CRATED_CLICKED, NO_CLICKED}

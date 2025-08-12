@@ -1,8 +1,8 @@
 package com.example.app.model.data.http
 
 import dto.LogInUserDTO
-import dto.TokenDTO
-import dto.UserCreatedDTO
+import dto.TokensDTO
+import dto.UserAuthDTO
 import dto.UserCreationDTO
 import dto.UserOUT
 import retrofit2.http.Body
@@ -21,14 +21,14 @@ interface ApiServiceUsers {
 
     @Headers("Content-Type: application/json")
     @PUT("users/auth")
-    suspend fun login(@Body loginUser: LogInUserDTO): TokenDTO
+    suspend fun login(@Body loginUser: LogInUserDTO): UserAuthDTO
 
     @Headers("Content-Type: application/json")
     @POST("users/")
-    suspend fun createUser(@Body user: UserCreationDTO): UserCreatedDTO
+    suspend fun createUser(@Body user: UserCreationDTO): UserAuthDTO
 
     @Headers("Content-Type: application/json")
     @POST("users/auth/refresh")
-    suspend fun refreshToken(@Header("Authorization") token: String, @Body user: UserCreationDTO): TokenDTO
+    suspend fun refreshToken(@Header("Authorization") token: String, @Body user: UserCreationDTO): TokensDTO
 
 }

@@ -4,8 +4,8 @@ import Serializers
 import auth.AuthService
 import domain.Email
 import domain.Id
-import dto.TokenDTO
-import dto.UserCreatedDTO
+import dto.TokensDTO
+import dto.UserAuthDTO
 import dto.UserCreationDTO
 import kotlinx.serialization.json.Json
 import org.http4k.core.*
@@ -38,7 +38,7 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
     private fun refreshToken(request: Request) = runCatchingResponse(CREATED) {
         val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
         val email = authService.verifyRefreshToken(token)
-        Json.encodeToString(TokenDTO(authService.generateAccessToken(email.email),token))
+        Json.encodeToString(TokensDTO(authService.generateAccessToken(email.email),token))
     }
 
     private fun getUserById(request: Request) = runCatchingResponse(OK){
@@ -54,15 +54,14 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
         logger.info("body String ${request.bodyString()}")
         val userReq: UserCreationDTO = with(serializer.userSerializer) { request.bodyString().toUserIn() }
         val userCreated = service.createUser(userReq.name, Email(userReq.email),userReq.password).toOUT()
-        val userResponse = UserCreatedDTO(userCreated,authService.generateTokens(userReq.email).toDTO())
+        val userResponse = UserAuthDTO(userCreated,authService.generateTokens(userReq.email).toDTO())
         Json.encodeToString(userResponse)
     }
 
     private fun logIn(request: Request) = runCatchingResponse(OK) {
         val logData = with(serializer.userSerializer) { request.bodyString().toLogInUser() }
-        if (service.authenticate(logData.email,logData.password)){
-            Json.encodeToString(authService.generateTokens(logData.email).toDTO()) // to be removed
-        } else throw IllegalStateException("")
+        val user = service.authenticate(logData.email,logData.password)
+        Json.encodeToString(UserAuthDTO(user.toOUT(),authService.generateTokens(logData.email).toDTO())) // to be removed
     }
 
 }

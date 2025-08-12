@@ -3,7 +3,7 @@ package dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserCreatedDTO(
+data class UserAuthDTO(
     val user: UserOUT,
-    val tokenDTO: TokenDTO
+    val tokensDTO: TokensDTO
 )

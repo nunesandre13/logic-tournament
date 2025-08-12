@@ -16,9 +16,9 @@ class UserServices(private val userData: UserData): IUsersServices {
 
     override fun getUserById(id: Id): User? = userData.findById(id.id)
 
-    override fun authenticate(email: String, password: String): Boolean {
+    override fun authenticate(email: String, password: String): User {
         val hash = userData.getUserPassWordHash(Email(email))  ?: throw IllegalStateException("Email does not exist")
-        return verifyHashEquals(Email(email),password,hash)
+        if (verifyHashEquals(Email(email),password,hash.second)) return hash.first else throw IllegalStateException("Email does not match password")
     }
 
 }

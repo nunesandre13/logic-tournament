@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app.model.services.UserServices
 import domain.Tokens
+import domain.UserAuthResponse
 import dto.LogInUserDTO
 import dto.UserCreationDTO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,9 +25,9 @@ class UserViewModel(
             try {
                 // The UserServices returns Tokens, you would likely then use
                 // those tokens to fetch user data or store them securely.
-                val tokens = userServices.login(loginUser)
+                val userAuth = userServices.login(loginUser)
 
-                _userState.value = UserStateUI.LoggedIn(tokens)
+                _userState.value = UserStateUI.LoggedIn(userAuth)
             } catch (e: Exception) {
                 // Handle login failure
                 _userState.value = UserStateUI.Error(e.message ?: "Login failed")
@@ -39,9 +40,9 @@ class UserViewModel(
             try {
                 // The UserServices returns Tokens, you would likely then use
                 // those tokens to fetch user data or store them securely.
-                val tokens = userServices.createUser(userCreationDTO)
+                val userAuth  = userServices.createUser(userCreationDTO)
 
-                _userState.value = UserStateUI.LoggedIn(tokens.tokenDTO.toDomain())
+                _userState.value = UserStateUI.LoggedIn(userAuth)
             } catch (e: Exception) {
                 // Handle login failure
                 _userState.value = UserStateUI.Error(e.message ?: "Login failed")
@@ -58,7 +59,7 @@ class UserViewModel(
 // Example State sealed class for the UI
 sealed class UserStateUI {
     object LoggedOut : UserStateUI()
-    data class LoggedIn(val user: Tokens) : UserStateUI()
+    data class LoggedIn(val user: UserAuthResponse) : UserStateUI()
     data class Error(val message: String) : UserStateUI()
     // ... other states like Loading
 }

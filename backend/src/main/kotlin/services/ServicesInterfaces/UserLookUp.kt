@@ -6,5 +6,5 @@ import domain.User
 interface UserLookUp {
     fun getUserById(id: Id): User?
 
-    fun authenticate(email: String, password: String): Boolean
+    fun authenticate(email: String, password: String): User
 }

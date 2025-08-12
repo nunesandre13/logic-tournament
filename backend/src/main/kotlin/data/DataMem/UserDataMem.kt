@@ -20,5 +20,5 @@ class UserDataMem: UserData {
 
     override fun findAll(): List<User> = users.values.toList().map { it.first }
 
-    override fun getUserPassWordHash(email: Email): ByteArray? = users.values.firstOrNull{ it.first.email == email }?.second
+    override fun getUserPassWordHash(email: Email): Pair<User,ByteArray>? = users.values.firstOrNull{ it.first.email == email }
 }

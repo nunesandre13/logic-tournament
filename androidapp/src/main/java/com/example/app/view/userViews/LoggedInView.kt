@@ -8,9 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import domain.Tokens
+import domain.User
 
 @Composable
-fun LoggedInView(user: Tokens, onLogoutClicked: () -> Unit) {
+fun LoggedInView(user: User, onLogoutClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()

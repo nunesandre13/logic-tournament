@@ -1,11 +1,14 @@
 
+import domain.Email
 import domain.Id
 import domain.Player
 import domain.Tokens
 import domain.User
+import domain.UserAuthResponse
 import dto.IdDTO
 import dto.PlayerDTO
-import dto.TokenDTO
+import dto.TokensDTO
+import dto.UserAuthDTO
 import dto.UserOUT
 
 
@@ -23,8 +26,11 @@ fun IdDTO.toDomain(): Id = Id(this.id)
 
 // USER mappers
 fun User.toOUT() = UserOUT(this.name, this.id.toDTO(), this.email.email)
+fun UserOUT.toDomain() = User(this.id.toDomain(),this.name, Email(this.email))
 
-fun Tokens.toDTO(): TokenDTO = TokenDTO(this.accessToken,this.refreshToken)
+fun Tokens.toDTO(): TokensDTO = TokensDTO(this.accessToken,this.refreshToken)
 
-fun TokenDTO.toDomain(): Tokens = Tokens(this.accessToken,this.refreshToken)
+fun TokensDTO.toDomain(): Tokens = Tokens(this.accessToken,this.refreshToken)
+
+fun UserAuthDTO.toDomain(): UserAuthResponse = UserAuthResponse(this.user.toDomain(), this.tokensDTO.toDomain())
 
