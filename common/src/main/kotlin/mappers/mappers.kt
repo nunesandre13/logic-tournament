@@ -26,3 +26,5 @@ fun User.toOUT() = UserOUT(this.name, this.id.toDTO(), this.email.email)
 
 fun Tokens.toDTO(): TokenDTO = TokenDTO(this.accessToken,this.refreshToken)
 
+fun TokenDTO.toDomain(): Tokens = Tokens(this.accessToken,this.refreshToken)
+

@@ -7,6 +7,7 @@ import org.http4k.routing.websockets
 import org.http4k.websocket.Websocket
 import java.util.concurrent.CopyOnWriteArrayList
 import dto.*
+import jdk.internal.joptsimple.internal.Messages.message
 import kotlinx.coroutines.*
 import mappers.IGameMappers
 import org.http4k.core.Request
@@ -53,6 +54,7 @@ class GameWebSocketHandler(
                     is Command -> treatCommandResponse(response, channel)
                     is Event -> treatEventResponse(response, channel)
                     is Data -> treatDataResponse(response, channel)
+                    is ProtocolMessage -> treatProtocolMessage(response)
                 }
             }
             webSocket.onError {
@@ -61,6 +63,13 @@ class GameWebSocketHandler(
         }(request)
     }
 
+    private fun treatProtocolMessage(protocolMessage: ProtocolMessage) {
+        when (protocolMessage) {
+            is HeartBeat-> logger.info("HEARTBEAT: ${protocolMessage.timestamp}")
+            is ConnectionClosed -> logger.info("Connection closed")
+            is ConnectionOpened -> logger.info("Connection opened")
+        }
+    }
     private fun treatDataResponse(data: Data, channel: Channel<WebSocketMessage>) {
         when (data) {
             is GameActionResultDTO.GameEndedDTO -> TODO()
@@ -73,14 +82,9 @@ class GameWebSocketHandler(
 
     private fun treatEventResponse(event: Event, channel: Channel<WebSocketMessage>) {
         when (event) {
-            is HeartBeat -> {
-                logger.info("HEARTBEAT: ${event.timestamp}")
-            }
             is MessageEvent -> {}
             is GameDTO -> TODO()
             is MatchResultDTO -> TODO()
-            is ConnectionClosed -> TODO()
-            is ConnectionOpened -> TODO()
         }
     }
 

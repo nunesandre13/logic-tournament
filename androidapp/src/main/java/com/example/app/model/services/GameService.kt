@@ -1,9 +1,8 @@
-package com.example.app.model
+package com.example.app.model.services
 
 import GameMappers
 import Serializers
-import com.example.app.model.data.webSocket.GameWebSocketListener
-import com.example.app.model.data.webSocket.WebSocketMessageDispatcher
+import com.example.app.model.services.InterFaces.GameWebSocketListenerFactoryI
 import com.example.app.model.data.webSocket.WebSocketService
 import com.example.app.model.data.webSocket.WsGamesMessages
 import domain.Id
@@ -20,20 +19,21 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import toDTO
 
-class GameRepository(
-    private val webSocketClient: OkHttpClient,
-    private val request: Request,
-    private val service: WebSocketService<WebSocketMessage>,
-    private val serializer: Serializers) {
-    private val mappers = GameMappers()
-    private val wsGamesMessages = WsGamesMessages(mappers)
-    private val dispatcher = WebSocketMessageDispatcher(wsGamesMessages)
+class GameService(
+        private val webSocketClient: OkHttpClient,
+        private val request: Request,
+        private val serializer: Serializers,
+        private val mappers: GameMappers,
+        private val wsGamesMessages: WsGamesMessages,
+        private val service: WebSocketService<WebSocketMessage>,
+        private val listenerFactory: GameWebSocketListenerFactoryI
+){
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
         scope.launch {
             service.fromSocket().collect { message ->
-                dispatcher.dispatch(message)
+                wsGamesMessages.dispatch(message)
             }
         }
     }
@@ -45,7 +45,7 @@ class GameRepository(
     val events = wsGamesMessages.events
 
     fun connect() {
-        webSocketClient.newWebSocket(request, GameWebSocketListener(service, serializer))
+        webSocketClient.newWebSocket(request, listenerFactory.create(service,serializer))
     }
 
     suspend fun sendCommand(command: GameCommands, roomId: Id) {

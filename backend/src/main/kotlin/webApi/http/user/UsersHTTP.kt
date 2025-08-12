@@ -49,7 +49,6 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
         with(serializer.userSerializer){ service.listUsers().map { it.toOUT() }.toJson()}
     }
 
-
     // deve retornar tokens de acesso
     private fun createUser(request: Request) = runCatchingResponse(CREATED) {
         logger.info("body String ${request.bodyString()}")

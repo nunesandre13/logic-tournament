@@ -1,5 +1,6 @@
 package com.example.app.model.data.webSocket
 
+import WebSocketMessageDispatcher
 import WebSocketMessageService
 import domain.games.GameCommands
 import domain.games.GameData
@@ -13,7 +14,17 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import mappers.IGameMappers
 
-class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageService<GameCommandsDTO, GameDataDTO, GameEventDTO> {
+class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageService<GameCommandsDTO, GameDataDTO, GameEventDTO>,
+    WebSocketMessageDispatcher {
+    override fun dispatch(message: WebSocketMessage) {
+        when (message) {
+            is GameCommandsDTO -> onCommand(message)
+            is GameDataDTO -> onData(message)
+            is GameEventDTO -> onEvent(message)
+            is ProtocolMessage -> onProtocol(message)
+            else -> onOther(message)
+        }
+    }
 
     private val _events = MutableSharedFlow<GameEvent>()
     val events: SharedFlow<GameEvent> = _events

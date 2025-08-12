@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import serialization.AppJson
 
 object RetrofitClient {
-    private const val BASE_URL = "http://localhost:9000/http/" // should be on a .env
+    private const val BASE_URL = "http://10.0.2.2:9000/http/" // should be on a .env
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()

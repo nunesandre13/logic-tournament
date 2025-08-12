@@ -23,10 +23,10 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.0"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(21)
     }
     
 }
@@ -51,6 +51,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.8.3")
     implementation("androidx.compose.ui:ui-tooling-preview:1.8.3")
     debugImplementation("androidx.compose.ui:ui-tooling:1.8.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2")
 
     implementation("com.android.support:appcompat-v7:28.0.0")
     testImplementation("junit:junit:4.13.2")

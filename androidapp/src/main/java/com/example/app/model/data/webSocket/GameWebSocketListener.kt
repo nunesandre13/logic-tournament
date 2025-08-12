@@ -13,7 +13,7 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
-class GameWebSocketListener(private val service: WebSocketService<WebSocketMessage>, val serializer: Serializers) : WebSocketListener() {
+class GameWebSocketListener(val service: WebSocketService<WebSocketMessage>, val serializer: Serializers) : WebSocketListener() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

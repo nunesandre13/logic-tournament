@@ -24,7 +24,7 @@ interface ApiServiceUsers {
     suspend fun login(@Body loginUser: LogInUserDTO): TokenDTO
 
     @Headers("Content-Type: application/json")
-    @POST
+    @POST("users/")
     suspend fun createUser(@Body user: UserCreationDTO): UserCreatedDTO
 
     @Headers("Content-Type: application/json")

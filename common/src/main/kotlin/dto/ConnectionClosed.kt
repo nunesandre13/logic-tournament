@@ -1,3 +1,6 @@
 package dto
 
-class ConnectionClosed(reason: String) : ProtocolMessage
+import kotlinx.serialization.Serializable
+
+@Serializable
+class ConnectionClosed(val reason: String) : ProtocolMessage
