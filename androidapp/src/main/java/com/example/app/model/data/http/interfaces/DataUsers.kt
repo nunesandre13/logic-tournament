@@ -14,5 +14,7 @@ interface DataUsers {
 
     suspend fun createUser(user: UserCreationDTO): UserAuthResponse
 
-    suspend fun refreshToken(token: String, user: UserCreationDTO): Tokens
+    suspend fun refreshToken(token: String): Tokens
+
+    fun refreshTokenSync(refreshToken: String): Tokens
 }

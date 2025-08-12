@@ -4,7 +4,6 @@ import com.example.app.model.data.http.interfaces.DataUsers
 import domain.Tokens
 import domain.UserAuthResponse
 import dto.LogInUserDTO
-import dto.UserAuthDTO
 import dto.UserCreationDTO
 import dto.UserOUT
 import toDomain
@@ -17,5 +16,8 @@ class DataSourceUsers(private val api: ApiServiceUsers): DataUsers{
 
     override suspend fun createUser(user: UserCreationDTO): UserAuthResponse = api.createUser(user).toDomain()
 
-    override suspend fun refreshToken(token: String, user: UserCreationDTO): Tokens = api.refreshToken(token, user).toDomain()
+    override suspend fun refreshToken(token: String): Tokens = api.refreshToken(token).toDomain()
+
+    override fun refreshTokenSync(refreshToken: String): Tokens  = api.refreshTokenSync(refreshToken).execute().body()?.toDomain()
+        ?: throw Exception("Erro ao renovar token")
 }

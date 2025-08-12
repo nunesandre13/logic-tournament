@@ -5,6 +5,7 @@ import dto.TokensDTO
 import dto.UserAuthDTO
 import dto.UserCreationDTO
 import dto.UserOUT
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -29,6 +30,10 @@ interface ApiServiceUsers {
 
     @Headers("Content-Type: application/json")
     @POST("users/auth/refresh")
-    suspend fun refreshToken(@Header("Authorization") token: String, @Body user: UserCreationDTO): TokensDTO
+    suspend fun refreshToken(@Header("Authorization") token: String): TokensDTO
+
+    @Headers("Content-Type: application/json")
+    @POST("users/auth/refresh")
+    fun refreshTokenSync(@Header("Authorization") token: String): Call<TokensDTO>
 
 }
