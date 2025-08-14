@@ -19,15 +19,15 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import toDTO
 
-class GameService(
-        private val webSocketClient: OkHttpClient,
-        private val request: Request,
-        private val serializer: Serializers,
-        private val mappers: GameMappers,
-        private val wsGamesMessages: WsGamesMessages,
-        private val service: WebSocketService<WebSocketMessage>,
-        private val listenerFactory: GameWebSocketListenerFactoryI
-){
+class GameService(config: GameServiceConfig) {
+
+    private val webSocketClient: OkHttpClient = config.webSocketClient
+    private val request: Request = config.request
+    private val serializer: Serializers = config.serializer
+    private val mappers: GameMappers = config.mappers
+    private val wsGamesMessages: WsGamesMessages = config.wsGamesMessages
+    private val service: WebSocketService<WebSocketMessage> = config.service
+    private val listenerFactory: GameWebSocketListenerFactoryI = config.listenerFactory
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {

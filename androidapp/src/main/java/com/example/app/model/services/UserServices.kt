@@ -1,10 +1,7 @@
 package com.example.app.model.services
 
 import com.example.app.model.data.http.interfaces.DataUsers
-import domain.Tokens
 import domain.UserAuthResponse
-import dto.LogInUserDTO
-import dto.UserAuthDTO
 import dto.UserCreationDTO
 import dto.UserOUT
 

@@ -11,13 +11,6 @@ import toDomain
 class DataSourceUsers(private val api: ApiServiceUsers): DataUsers{
 
     override suspend fun getUserById(token: String, id: Int): UserOUT = api.getUserById(token, id)
-
-    override suspend fun login(loginUser: LogInUserDTO): UserAuthResponse = api.login(loginUser).toDomain()
-
     override suspend fun createUser(user: UserCreationDTO): UserAuthResponse = api.createUser(user).toDomain()
 
-    override suspend fun refreshToken(token: String): Tokens = api.refreshToken(token).toDomain()
-
-    override fun refreshTokenSync(refreshToken: String): Tokens  = api.refreshTokenSync(refreshToken).execute().body()?.toDomain()
-        ?: throw Exception("Erro ao renovar token")
 }

@@ -1,13 +1,17 @@
 package com.example.app.model.services
 
 import android.content.SharedPreferences
+import com.example.app.model.data.http.interfaces.DataAuth
 import com.example.app.model.data.http.interfaces.DataUsers
 import domain.Tokens
 import domain.UserAuthResponse
 import dto.LogInUserDTO
 
+
+
+// trocar de sharedPreferences, para data source
 class AuthService(
-    private val data: DataUsers,
+    private val data: DataAuth,
     private val prefs: SharedPreferences
 ) {
     companion object {
@@ -45,6 +49,17 @@ class AuthService(
             saveTokens(login.tokens)
             login
         }catch (e:Exception){
+            null
+        }
+    }
+
+    suspend fun refreshToken(): Tokens? {
+        val refreshToken = getRefreshToken() ?: return null
+        return try {
+            val tokens = data.refreshToken(refreshToken)
+            saveTokens(tokens)
+            tokens
+        } catch (e: Exception) {
             null
         }
     }
