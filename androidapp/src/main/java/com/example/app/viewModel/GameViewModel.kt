@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.app.model.services.GameService
 import domain.Id
 import domain.Player
+import domain.User
+import domain.games.Game
 import domain.games.GameCommands
 import domain.games.GameData
 import domain.games.GameEvent
@@ -20,7 +22,20 @@ class GameViewModel(
 ) : ViewModel() {
 
     private val _gameState = MutableStateFlow<GameStateUI>(GameStateUI.Loading)
+
     val gameState: StateFlow<GameStateUI> = _gameState
+
+
+    private val _currentUser = MutableStateFlow<User?>(null)
+
+
+    val currentUser: StateFlow<User?> = _currentUser
+
+
+    fun setCurrentUser(user: User) {
+        _currentUser.value = user
+    }
+
 
     init {
         // Collect all flows from GameService and combine them into a single state
@@ -61,7 +76,6 @@ class GameViewModel(
     }
 }
 
-// Example State sealed class for the UI
 sealed class GameStateUI {
     object Loading : GameStateUI()
     data class Loaded(
@@ -69,5 +83,4 @@ sealed class GameStateUI {
         val lastData: GameData,
         val lastEvent: GameEvent
     ) : GameStateUI()
-    // ... other states like Error
 }

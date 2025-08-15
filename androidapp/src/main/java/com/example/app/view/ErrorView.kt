@@ -7,9 +7,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import com.example.app.viewModel.ErrorManager
+import com.example.app.viewModel.UserViewModel
 
 @Composable
-fun ErrorView(errorMessage: String) {
+fun ErrorScreen(vm: ErrorManager) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -18,9 +22,15 @@ fun ErrorView(errorMessage: String) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Error: $errorMessage",
+            text = "Error: ${vm.errorMessage}",
             color = Color.Red
         )
-        // You might add a "Retry" button here
+    }
+    vm.clearError()
+}
+
+fun NavGraphBuilder.ErrorFlow(vm: ErrorManager) {
+    composable(Screens.ERROR.route) {
+        ErrorScreen(vm = vm)
     }
 }

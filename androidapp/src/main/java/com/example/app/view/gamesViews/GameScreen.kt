@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GameScreen(onLogout: () -> Unit) {
+fun GameScreen(onLogout: () -> Unit, onGameClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -24,6 +24,6 @@ fun GameScreen(onLogout: () -> Unit) {
         Button(onClick = onLogout) {
             Text("Logout")
         }
-        // Your game UI here
+
     }
 }
