@@ -2,6 +2,8 @@ package com.example.app.model.data.webSocket
 
 import WebSocketMessageDispatcher
 import WebSocketMessageService
+import android.util.Log
+import com.example.app.model.services.logger
 import domain.games.GameCommands
 import domain.games.GameData
 import domain.games.GameEvent
@@ -10,8 +12,12 @@ import dto.GameDataDTO
 import dto.GameEventDTO
 import dto.ProtocolMessage
 import dto.WebSocketMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import mappers.IGameMappers
 
 class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageService<GameCommandsDTO, GameDataDTO, GameEventDTO>,
@@ -26,6 +32,8 @@ class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageServi
         }
     }
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     private val _events = MutableSharedFlow<GameEvent>()
     val events: SharedFlow<GameEvent> = _events
 
@@ -37,24 +45,33 @@ class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageServi
 
     override fun onCommand(command: GameCommandsDTO) {
         val domainCommand = mappers.toDomain(command)
-        _commands.tryEmit(domainCommand)
+        Log.d(logger, "Game command: $domainCommand")
+        scope.launch {
+            _commands.emit(domainCommand)
+        }
     }
 
     override fun onData(data: GameDataDTO) {
         val domainData = mappers.toDomain(data)
-        _data.tryEmit(domainData)
+        Log.d(logger, "Game data: $domainData")
+        scope.launch {
+            _data.emit(domainData)
+        }
     }
     override fun onEvent(event: GameEventDTO) {
         val domainEvent = mappers.toDomain(event)
-        _events.tryEmit(domainEvent)
+        Log.d(logger, "Game event: $domainEvent")
+        scope.launch {
+            _events.emit(domainEvent)
+        }
     }
 
     override fun onProtocol(message: ProtocolMessage) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onOther(message: WebSocketMessage) {
-        TODO("Not yet implemented")
+
     }
 
 }

@@ -7,5 +7,6 @@ enum class Screens(val route: String) {
     REGISTER("register"),
     LOGIN("login"),
     GAMES_LIST("games_list"),
-    TIC_TAC_TOE_GAME("tac-toe-game")
+    TIC_TAC_TOE_GAME("tac-toe-game"),
+    GAMES_ROUTES("games_route"),
 }

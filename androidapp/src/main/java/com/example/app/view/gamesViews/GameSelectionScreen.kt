@@ -11,23 +11,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import domain.games.GameType
 
 @Composable
 fun GameSelectionScreen(
-    games: List<String>,
-    onGameSelected: (String) -> Unit
+    gamesTypes: List<GameType>,
+    onGameSelected: (GameType) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text("Escolhe um jogo:", style = MaterialTheme.typography.headlineSmall)
-        games.forEach { game ->
+        gamesTypes.forEach { game ->
             Button(
                 onClick = { onGameSelected(game) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(game)
+                Text(game.name)
             }
         }
     }

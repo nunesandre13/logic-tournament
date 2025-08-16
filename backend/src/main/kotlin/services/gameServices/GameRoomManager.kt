@@ -25,7 +25,7 @@ class GameRoomManager {
     fun updateGameRoom(command: GameCommands.PlayCommand, id: Id): GameActionResult = runBlocking {
             val gameRoom = gameRooms[command.gameType]?.getById(id) ?: throw IllegalStateException("GameType $command.gameType not found")
             verifyPlayer(command.player,gameRoom).apply {
-                if (this) throw IllegalStateException("")
+                if (!this) throw IllegalStateException("")
             }
             return@runBlocking gameRoom.play(command)
         }

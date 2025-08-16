@@ -5,22 +5,26 @@ import domain.games.GameCommands
 import domain.games.GameData
 import domain.games.GameEvent
 import domain.games.GameResult
+import domain.games.MatchResult
 import dto.*
 import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
 import mappers.IGameMappers
 
-
 class GameMappers : IGameMappers {
     override fun toDomain(event: GameEventDTO): GameEvent {
-        when (event) {
-            is GameDTO -> return toDomain(event)
+        return when (event) {
+            is GameDTO -> toDomain(event)
+            is MatchResultDTO.FailureDTO -> MatchResult.InvalidMatch(event.error)
+            is MatchResultDTO.SuccessDTO -> MatchResult.Match(event.roomID.toDomain())
         }
     }
 
-    override fun toDTO(eventDTO: GameEvent): GameEventDTO {
-        when (eventDTO) {
-            is Game -> return toDTO(eventDTO)
+    override fun toDTO(event: GameEvent): GameEventDTO {
+        when (event) {
+            is Game -> return toDTO(event)
+            is MatchResult.InvalidMatch -> TODO()
+            is MatchResult.Match -> TODO()
         }
     }
 

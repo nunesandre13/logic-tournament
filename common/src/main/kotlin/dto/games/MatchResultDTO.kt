@@ -3,7 +3,7 @@ package dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class MatchResultDTO: Event {
+sealed class MatchResultDTO: GameEventDTO {
     @Serializable
     data class SuccessDTO(val roomID: IdDTO) : MatchResultDTO()
 

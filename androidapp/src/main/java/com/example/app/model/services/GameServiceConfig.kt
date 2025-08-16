@@ -20,8 +20,8 @@ data class GameServiceConfig(
 ){
     companion object {
         val config = GameServiceConfig(
-            webSocketClient = OkHttpClient(),
-            request = Request.Builder().url("wss://example.com").build(),
+            webSocketClient = OkHttpClient.Builder().build(),
+            request = Request.Builder().url("ws://10.0.2.2:9000/ws/games").build(),
             serializer = Serializers,
             mappers = GameMappers(),
             wsGamesMessages = WsGamesMessages(GameMappers()),

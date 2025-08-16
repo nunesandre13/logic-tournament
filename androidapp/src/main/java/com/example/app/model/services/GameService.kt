@@ -2,6 +2,7 @@ package com.example.app.model.services
 
 import GameMappers
 import Serializers
+import android.util.Log
 import com.example.app.model.services.InterFaces.GameWebSocketListenerFactoryI
 import com.example.app.model.data.webSocket.WebSocketService
 import com.example.app.model.data.webSocket.WsGamesMessages
@@ -17,7 +18,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import toDTO
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+
+const val logger = "MY_APP"
 
 class GameService(config: GameServiceConfig) {
 
@@ -29,10 +37,13 @@ class GameService(config: GameServiceConfig) {
     private val service: WebSocketService<WebSocketMessage> = config.service
     private val listenerFactory: GameWebSocketListenerFactoryI = config.listenerFactory
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val clients = ConcurrentLinkedDeque<WebSocket>()
+    private var webSocketListener: WebSocketListener? = null
 
     init {
         scope.launch {
             service.fromSocket().collect { message ->
+                Log.d(logger, "Game service: $message, collectinggggg")
                 wsGamesMessages.dispatch(message)
             }
         }
@@ -40,16 +51,28 @@ class GameService(config: GameServiceConfig) {
 
     val commands = wsGamesMessages.commands
 
+    private val connections = AtomicInteger(0)
+
     val data = wsGamesMessages.data
 
     val events = wsGamesMessages.events
 
     fun connect() {
-        webSocketClient.newWebSocket(request, listenerFactory.create(service,serializer))
+        Log.d(logger, "openning the socket")
+
+        val listener = listenerFactory.create(service,serializer)
+        webSocketListener = listener
+        val ws = webSocketClient.newWebSocket(request, listener )
+        clients.add(ws)
+        connections.incrementAndGet()
+        Log.d(logger, "connection made" + connections.get())
+
     }
 
     suspend fun sendCommand(command: GameCommands, roomId: Id) {
+        Log.d(logger, "sending command $command")
         service.sendToSocket(mappers.toDTO(command, roomId.toDTO()))
+
     }
 
     suspend fun requestGame(player: Player, gameType: GameType) {
