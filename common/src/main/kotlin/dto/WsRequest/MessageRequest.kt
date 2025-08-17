@@ -1,6 +1,5 @@
 package dto
 
 import kotlinx.serialization.Serializable
-
 @Serializable
-class ConnectionClosed(val reason: String) : ProtocolMessage
+data class MessageRequest(val message: String): WsRequest

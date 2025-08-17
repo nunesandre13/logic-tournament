@@ -4,14 +4,13 @@ import GameMappers
 import Serializers
 import android.util.Log
 import com.example.app.model.services.InterFaces.GameWebSocketListenerFactoryI
-import com.example.app.model.data.webSocket.WebSocketService
+import WebSocketChannel
 import com.example.app.model.data.webSocket.WsGamesMessages
 import domain.Id
 import domain.Player
 import domain.games.GameCommands
 import domain.games.GameType
 import dto.GameCommandsDTO
-import dto.WebSocketMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,7 +22,6 @@ import okhttp3.WebSocketListener
 import toDTO
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.concurrent.atomics.AtomicInt
 
 const val logger = "MY_APP"
 
@@ -34,7 +32,7 @@ class GameService(config: GameServiceConfig) {
     private val serializer: Serializers = config.serializer
     private val mappers: GameMappers = config.mappers
     private val wsGamesMessages: WsGamesMessages = config.wsGamesMessages
-    private val service: WebSocketService<WebSocketMessage> = config.service
+    private val service: WebSocketChannel<WebSocketMessage> = config.service
     private val listenerFactory: GameWebSocketListenerFactoryI = config.listenerFactory
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val clients = ConcurrentLinkedDeque<WebSocket>()

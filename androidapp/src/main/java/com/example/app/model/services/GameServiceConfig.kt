@@ -2,10 +2,9 @@ package com.example.app.model.services
 
 import GameMappers
 import Serializers
-import com.example.app.model.data.webSocket.WebSocketService
+import WebSocketChannel
 import com.example.app.model.data.webSocket.WsGamesMessages
 import com.example.app.model.services.InterFaces.GameWebSocketListenerFactoryI
-import dto.WebSocketMessage
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -15,7 +14,7 @@ data class GameServiceConfig(
     val serializer: Serializers,
     val mappers: GameMappers,
     val wsGamesMessages: WsGamesMessages,
-    val service: WebSocketService<WebSocketMessage>,
+    val service: WebSocketChannel<WebSocketMessage>,
     val listenerFactory: GameWebSocketListenerFactoryI
 ){
     companion object {
@@ -25,7 +24,7 @@ data class GameServiceConfig(
             serializer = Serializers,
             mappers = GameMappers(),
             wsGamesMessages = WsGamesMessages(GameMappers()),
-            service = WebSocketService(),
+            service = WebSocketChannel(),
             listenerFactory = GameWebSocketListenerFactory()
         )
     }

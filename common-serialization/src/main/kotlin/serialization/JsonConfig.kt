@@ -14,7 +14,7 @@ val AppJson = Json {
     // *** MÓDULO DE SERIALIZADORES PARA POLIMORFISMO ***
     serializersModule = SerializersModule {
         // Mapeamento para a interface base 'WebSocketResponse'
-        polymorphic(WebSocketMessage::class) {
+        polymorphic(WsCommunication::class) {
             // Commands
             subclass(GameCommandsDTO.MatchingCommandDTO.RequestMatchDTO::class)
             subclass(GameCommandsDTO.MatchingCommandDTO.CancelMatchSearchingDTO::class)
@@ -36,7 +36,6 @@ val AppJson = Json {
 
             // Events
             // Register the Event interface as a subclass of WebSocketResponse
-            subclass(MessageEvent::class)
             subclass(GameDTO.TicTacToeGameDTO::class)
             subclass(MatchResultDTO.SuccessDTO::class)
             subclass(MatchResultDTO.FailureDTO::class)
@@ -48,3 +47,5 @@ val AppJson = Json {
         }
     }
 }
+
+

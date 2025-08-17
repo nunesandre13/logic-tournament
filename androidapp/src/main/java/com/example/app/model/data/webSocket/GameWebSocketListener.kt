@@ -3,10 +3,9 @@ package com.example.app.model.data.webSocket
 import Serializers
 import android.util.Log
 import com.example.app.model.services.logger
-import dto.ConnectionClosed
-import dto.ConnectionOpened
-import dto.HeartBeat
-import dto.WebSocketMessage
+import dto.Protocols.ConnectionClosed
+import dto.Protocols.ConnectionOpened
+import dto.Protocols.HeartBeat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

@@ -1,11 +1,11 @@
 package serializers
 
+import dto.WsCommunication
 import serialization.AppJson
-import dto.WebSocketMessage
 import kotlinx.serialization.encodeToString
 
 object WebSocketResponseSerializer {
-    fun WebSocketMessage.toJson(): String = AppJson.encodeToString<WebSocketMessage>(this)
+    fun WsCommunication.toJson(): String = AppJson.encodeToString<WsCommunication>(this)
 
-    fun String.fromJson() = AppJson.decodeFromString<WebSocketMessage>(this)
+    fun String.fromJson() = AppJson.decodeFromString<WsCommunication>(this)
 }

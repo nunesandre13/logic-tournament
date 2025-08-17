@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import domain.games.GameType
 
 @Serializable
-sealed interface GameCommandsDTO : Command {
+sealed interface GameCommandsDTO : GameRequest {
 
     // --- Comandos de Matchmaking ---
     @Serializable

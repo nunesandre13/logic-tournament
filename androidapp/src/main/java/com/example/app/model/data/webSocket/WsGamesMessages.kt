@@ -8,10 +8,8 @@ import domain.games.GameCommands
 import domain.games.GameData
 import domain.games.GameEvent
 import dto.GameCommandsDTO
-import dto.GameDataDTO
-import dto.GameEventDTO
-import dto.ProtocolMessage
-import dto.WebSocketMessage
+import dto.GameResponse
+import dto.GameRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,13 +18,13 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import mappers.IGameMappers
 
-class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageService<GameCommandsDTO, GameDataDTO, GameEventDTO>,
+class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageService<GameCommandsDTO, GameResponse, GameRequest>,
     WebSocketMessageDispatcher {
     override fun dispatch(message: WebSocketMessage) {
         when (message) {
             is GameCommandsDTO -> onCommand(message)
-            is GameDataDTO -> onData(message)
-            is GameEventDTO -> onEvent(message)
+            is GameResponse -> onData(message)
+            is GameRequest -> onEvent(message)
             is ProtocolMessage -> onProtocol(message)
             else -> onOther(message)
         }
@@ -51,14 +49,14 @@ class WsGamesMessages(private val mappers: IGameMappers) : WebSocketMessageServi
         }
     }
 
-    override fun onData(data: GameDataDTO) {
+    override fun onData(data: GameResponse) {
         val domainData = mappers.toDomain(data)
         Log.d(logger, "Game data: $domainData")
         scope.launch {
             _data.emit(domainData)
         }
     }
-    override fun onEvent(event: GameEventDTO) {
+    override fun onEvent(event: GameRequest) {
         val domainEvent = mappers.toDomain(event)
         Log.d(logger, "Game event: $domainEvent")
         scope.launch {

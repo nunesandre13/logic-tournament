@@ -10,11 +10,11 @@ import domain.games.GameResult
 import dto.*
 
 interface IGameMappers {
-    fun toDomain(event: GameEventDTO): GameEvent
-    fun toDTO(eventDTO: GameEvent): GameEventDTO
+    fun toDomain(event: GameRequest): GameEvent
+    fun toDTO(eventDTO: GameEvent): GameRequest
 
-    fun toDomain(data: GameDataDTO): GameData
-    fun toDTO(data: GameData): GameDataDTO
+    fun toDomain(data: GameResponse): GameData
+    fun toDTO(data: GameData): GameResponse
 
     fun toDomain(gameActionResultDTO: GameActionResultDTO): GameActionResult
     fun toDTO(gameActionResult: GameActionResult): GameActionResultDTO

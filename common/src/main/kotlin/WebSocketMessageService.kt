@@ -1,13 +1,9 @@
-import dto.Command
-import dto.Data
-import dto.Event
-import dto.ProtocolMessage
-import dto.WebSocketMessage
+import dto.WsProtocol
+import dto.WsRequest
+import dto.WsResponse
 
-interface WebSocketMessageService <C : Command, D : Data, E : Event> {
-    fun onCommand(command: C)
-    fun onEvent(event: E)
-    fun onData(data: D)
-    fun onProtocol(message: ProtocolMessage)
-    fun onOther(message: WebSocketMessage)
+interface WebSocketMessageService <P : WsProtocol, T : WsRequest, E : WsResponse> {
+   suspend fun onResponse(message: E)
+   suspend fun onRequest(message: T)
+   suspend fun onProtocol(message: P)
 }

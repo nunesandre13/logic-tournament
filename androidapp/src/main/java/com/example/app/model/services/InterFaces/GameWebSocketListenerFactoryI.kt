@@ -1,11 +1,9 @@
 package com.example.app.model.services.InterFaces
 
 import Serializers
-import com.example.app.model.data.webSocket.GameWebSocketListener
-import com.example.app.model.data.webSocket.WebSocketService
-import dto.WebSocketMessage
+import WebSocketChannel
 import okhttp3.WebSocketListener
 
 interface GameWebSocketListenerFactoryI {
-    fun create(service: WebSocketService<WebSocketMessage>, serializer: Serializers): WebSocketListener
+    fun create(service: WebSocketChannel<WebSocketMessage>, serializer: Serializers): WebSocketListener
 }

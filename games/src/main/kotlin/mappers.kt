@@ -12,7 +12,7 @@ import games.TicTacToe.TicTacToeMove
 import mappers.IGameMappers
 
 class GameMappers : IGameMappers {
-    override fun toDomain(event: GameEventDTO): GameEvent {
+    override fun toDomain(event: GameRequest): GameEvent {
         return when (event) {
             is GameDTO -> toDomain(event)
             is MatchResultDTO.FailureDTO -> MatchResult.InvalidMatch(event.error)
@@ -20,7 +20,7 @@ class GameMappers : IGameMappers {
         }
     }
 
-    override fun toDTO(event: GameEvent): GameEventDTO {
+    override fun toDTO(event: GameEvent): GameRequest {
         when (event) {
             is Game -> return toDTO(event)
             is MatchResult.InvalidMatch -> TODO()
@@ -28,13 +28,13 @@ class GameMappers : IGameMappers {
         }
     }
 
-    override fun toDomain(data: GameDataDTO): GameData {
+    override fun toDomain(data: GameResponse): GameData {
         when (data) {
             is GameActionResultDTO -> return toDomain(data)
         }
     }
 
-    override fun toDTO(data: GameData): GameDataDTO {
+    override fun toDTO(data: GameData): GameResponse {
         when (data) {
             is GameActionResult -> return toDTO(data)
         }
