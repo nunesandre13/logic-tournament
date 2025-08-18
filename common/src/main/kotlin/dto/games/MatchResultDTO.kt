@@ -1,5 +1,6 @@
 package dto
 
+import domain.games.GameType
 import kotlinx.serialization.Serializable
 
 @Serializable

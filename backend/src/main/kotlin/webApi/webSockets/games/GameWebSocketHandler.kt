@@ -1,17 +1,18 @@
 package webApi.webSockets.games
 
 import Serializers
-import WebSocketChannel
+import WsServerService
+import domain.games.MatchResult
 import org.http4k.routing.websockets
 import org.http4k.websocket.Websocket
 import java.util.concurrent.CopyOnWriteArrayList
 import dto.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import mappers.IGameMappers
 import org.http4k.core.Request
 import org.http4k.websocket.WsMessage
 import org.http4k.websocket.WsResponse
+import serializers.WebSocketResponseSerializer.toJson
 import services.ServicesInterfaces.IGameServices
 
 import java.util.logging.Logger
@@ -20,7 +21,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class GameWebSocketHandler(
     private val gameServices: IGameServices,
-    serializer: Serializers,
+    private val serializer: Serializers,
     private val mappers: IGameMappers
 ) {
 
@@ -35,71 +36,64 @@ class GameWebSocketHandler(
     private val connections = CopyOnWriteArrayList<Websocket>()
 
     fun gameWebSocket(request: Request): WsResponse {
-        val socketChannel = WebSocketChannel<GameResponse, GameRequest, WsProtocol>()
-        val messageService = WsGameMessageService(gameServices,socketChannel,mappers)
-        val gameDispatcher = GameDispatcher(socketChannel)
+        val wsService = WsServerService<GameRequest, GameResponse, WsProtocol>()
+        val gameDispatcher = GameDispatcher(wsService)
+        val handlers = WsServerGameHandlers(gameServices, mappers)
+
         return websockets { webSocket ->
 
             connections += webSocket
 
-            startReadingFromSocket(socketChannel,messageService)
+            // envia tudo para o socket
+            scope.launch {
+                wsService.readFromChannelToSocket{ message ->
+                    webSocket.send(WsMessage(message.toJson()))
+                }
+            }
 
-            heartBeat {socketChannel::sendProtocolToSocket}
+            scope.launch {
+                handlers.gameState.collect { gameState ->
+                    wsService.emitToSocket(gameState)
+                }
+            }
 
-            sendToSocket(webSocket,socketChannel.fromApp())
+            // envia heatBeat para o channel para ser enviado para o socket
+            scope.launch {
+                while (isActive) {
+                    delay(heartBeatDelay)
+                    wsService.emitToSocket(HeartBeat())
+                }
+            }
+
+            // recebe um request e produz uma resposta
+            scope.launch {
+                wsService.onRequest{ request ->
+                    val response = handlers.onRequest(request)
+                    wsService.emitToSocket(response)
+                    scope.launch {
+                        handlers.flushAfterResponse()
+                    }
+                }
+            }
+
+            scope.launch {
+                wsService.onProtocol { protocol ->
+                    handlers.onProtocol(protocol)
+                }
+            }
 
             webSocket.onClose {
                 connections -= webSocket
             }
             webSocket.onMessage { message ->
-                onMessage(message, gameDispatcher)
+                scope.launch {
+                    gameDispatcher.dispatch(with(webSocketSerializer) { message.bodyString().fromJson() })
+                }
             }
-            webSocket.onError {
-                println("WEBSOCKET ERROR: $it")
+            webSocket.onError { error ->
+                logger.info(error.toString())
             }
         }(request)
-    }
-
-    fun startReadingFromSocket(socketChannel: WebSocketChannel<GameResponse, GameRequest, WsProtocol>,messageService: WsGameMessageService) {
-        scope.launch {
-            socketChannel.fromSocket().collect { message ->
-                messageService.onRequest(message)
-            }
-        }
-        scope.launch {
-            socketChannel.fromSocketProtocol().collect { message ->
-                messageService.onProtocol(message)
-            }
-        }
-    }
-
-    fun onMessage(message: WsMessage, gameDispatcher: GameDispatcher) {
-        scope.launch {
-            println("into Logging------------------------------")
-            logger.info(message.body.toString())
-            val response = with(webSocketSerializer) { message.body.toString().fromJson() }
-            gameDispatcher.dispatch(response)
-        }
-    }
-
-
-    private fun sendToSocket(socket: Websocket, flow: Flow<GameResponse>) {
-        scope.launch {
-            flow.collect { response ->
-                val json = with(webSocketSerializer) { response.toJson() }
-                println(json)
-                socket.send(WsMessage(json))
-            }
-        }
-    }
-
-    private fun heartBeat(send: suspend (HeartBeat) -> Unit) {
-        scope.launch {
-            while (true) {
-                delay(heartBeatDelay)
-                send(HeartBeat())
-            }
-        }
     }
 
 }

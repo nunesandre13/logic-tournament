@@ -12,7 +12,7 @@ import domain.games.GameActionResult
 import domain.games.GameCommands
 import domain.games.GameType
 import domain.games.MatchResult
-import kotlinx.coroutines.Dispatchers
+
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -47,7 +47,7 @@ class GameViewModel(
     init {
         viewModelScope.launch {
             launch {
-                gameService.data.collect { data ->
+                gameService.gameData.collect { data ->
                     when (data) {
                         is GameActionResult.GameEnded -> _gameState.emit(GameStateUI.GameOver)
                         is GameActionResult.InvalidCommand -> _events.emit(UiEvent.ShowMessage(data.message))
@@ -58,13 +58,14 @@ class GameViewModel(
                 }
             }
             launch {
-                gameService.events.collect { event ->
+                gameService.gameEvents.collect { event ->
                     when (event) {
                         is Game -> {
                             Log.d(logger, "Game Event: $event, now updating ui")
                             _gameState.emit(GameStateUI.Playing(event))}
                         is MatchResult.InvalidMatch -> _events.emit(UiEvent.ShowAlert("Invalid match!"))
                         is MatchResult.Match ->{
+                            Log.d(logger, "Match Event: $event")
                             roomId = event.roomId
                             _events.emit(UiEvent.ShowAlert("Matched!"))}
                     }
