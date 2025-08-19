@@ -2,12 +2,15 @@ import domain.games.Move
 import domain.games.Game
 import domain.games.GameActionResult
 import domain.games.GameCommands
+import domain.games.GameCommands.PlayCommand.*
 import domain.games.GameData
 import domain.games.GameEvent
 import domain.games.GameResult
 import domain.games.MatchResult
 import domain.games.MatchResult.*
 import dto.*
+import dto.GameCommandsDTO.MatchingCommandDTO.*
+import dto.GameCommandsDTO.PlayCommandDTO.*
 import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
 import mappers.IGameMappers
@@ -62,42 +65,49 @@ class GameMappers : IGameMappers {
 
     override fun toPlayCommandDomain(playCommandDTO: GameCommandsDTO.PlayCommandDTO): GameCommands {
         return when (playCommandDTO) {
-            is GameCommandsDTO.PlayCommandDTO.MakeMoveDTO ->
-                GameCommands.PlayCommand.MakeMove(
+            is MakeMoveDTO ->
+                MakeMove(
                     player = playCommandDTO.player.toDomain(),
                     gameType = playCommandDTO.gameType,
                     gameMove = toDomain(playCommandDTO.gameMove)
                 )
 
-            is GameCommandsDTO.PlayCommandDTO.ResignDTO ->
-                GameCommands.PlayCommand.Resign(
+            is ResignDTO ->
+                Resign(
                     player = playCommandDTO.player.toDomain(),
                     gameType = playCommandDTO.gameType
                 )
 
-            is GameCommandsDTO.PlayCommandDTO.PassDTO ->
-                GameCommands.PlayCommand.Pass(
+            is PassDTO ->
+                Pass(
                     player = playCommandDTO.player.toDomain(),
                     gameType = playCommandDTO.gameType
                 )
 
-            is GameCommandsDTO.PlayCommandDTO.OfferDrawDTO ->
-                GameCommands.PlayCommand.OfferDraw(
+            is OfferDrawDTO ->
+                OfferDraw(
                     player = playCommandDTO.player.toDomain(),
                     gameType = playCommandDTO.gameType
                 )
 
-            is GameCommandsDTO.PlayCommandDTO.AcceptDrawDTO ->
-                GameCommands.PlayCommand.AcceptDraw(
+            is AcceptDrawDTO ->
+                AcceptDraw(
                     player = playCommandDTO.player.toDomain(),
                     gameType = playCommandDTO.gameType
                 )
 
-            is GameCommandsDTO.PlayCommandDTO.GetGameStatusDTO ->
-                GameCommands.PlayCommand.GetGameStatus(
+            is GetGameStatusDTO ->
+                GetGameStatus(
                     player = playCommandDTO.player.toDomain(),
                     gameType = playCommandDTO.gameType
                 )
+
+            is QuitGameDTO -> {
+                QuitGame(
+                    player = playCommandDTO.player.toDomain(),
+                    gameType = playCommandDTO.gameType
+                )
+            }
         }
     }
 
@@ -123,19 +133,19 @@ class GameMappers : IGameMappers {
     override fun toDTO(gameCommands: GameCommands, roomId: IdDTO?): GameCommandsDTO {
         return when (gameCommands) {
             is GameCommands.MatchingCommand.RequestMatch ->
-                GameCommandsDTO.MatchingCommandDTO.RequestMatchDTO(
+                RequestMatchDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType
                 )
 
             is GameCommands.MatchingCommand.CancelMatchSearching ->
-                GameCommandsDTO.MatchingCommandDTO.CancelMatchSearchingDTO(
+                CancelMatchSearchingDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType
                 )
 
             is GameCommands.PlayCommand.MakeMove ->
-                GameCommandsDTO.PlayCommandDTO.MakeMoveDTO(
+                MakeMoveDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType,
                     roomId = roomId,
@@ -143,39 +153,47 @@ class GameMappers : IGameMappers {
                 )
 
             is GameCommands.PlayCommand.Resign ->
-                GameCommandsDTO.PlayCommandDTO.ResignDTO(
+                ResignDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType,
                     roomId = roomId
                 )
 
             is GameCommands.PlayCommand.Pass ->
-                GameCommandsDTO.PlayCommandDTO.PassDTO(
+                PassDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType,
                     roomId = roomId
                 )
 
             is GameCommands.PlayCommand.OfferDraw ->
-                GameCommandsDTO.PlayCommandDTO.OfferDrawDTO(
+                OfferDrawDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType,
                     roomId = roomId
                 )
 
             is GameCommands.PlayCommand.AcceptDraw ->
-                GameCommandsDTO.PlayCommandDTO.AcceptDrawDTO(
+                AcceptDrawDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType,
                     roomId = roomId
                 )
 
             is GameCommands.PlayCommand.GetGameStatus ->
-                GameCommandsDTO.PlayCommandDTO.GetGameStatusDTO(
+                GetGameStatusDTO(
                     player = gameCommands.player.toDTO(),
                     gameType = gameCommands.gameType,
                     roomId = roomId
                 )
+
+            is GameCommands.PlayCommand.QuitGame -> {
+                QuitGameDTO(
+                    player = gameCommands.player.toDTO(),
+                    gameType = gameCommands.gameType,
+                    roomId = roomId
+                )
+            }
         }
     }
 

@@ -18,9 +18,12 @@ class TicTacToeGame(
             is GameCommands.PlayCommand.Resign -> handleResign()
             is GameCommands.PlayCommand.OfferDraw -> handleOfferDraw()
             is GameCommands.PlayCommand.AcceptDraw -> handleAcceptDraw()
-            else -> return GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
+            is GameCommands.PlayCommand.GetGameStatus -> GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
+            is GameCommands.PlayCommand.Pass -> GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
+            is GameCommands.PlayCommand.QuitGame -> GameActionResult.GameEnded("Player: ${command.player} Quit the game")
         }
     }
+
 
     private fun makeMove(move: TicTacToeMove): GameActionResult {
         if (result != GameResult.Ongoing) {

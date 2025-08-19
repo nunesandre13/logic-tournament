@@ -44,7 +44,7 @@ class AuthService(
         if (refreshToken.expiresAt.isBefore(Instant.now())) {
             throw Exception("Refresh token expirado")
         }
-        return Email(refreshToken.token)
+        return Email(refreshToken.userEmail)
     }
 
     fun generateTokens(email: String): Tokens = Tokens(generateAccessToken(email),generateAndSaveRefreshToken(email))

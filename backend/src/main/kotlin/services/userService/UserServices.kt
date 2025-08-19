@@ -21,4 +21,8 @@ class UserServices(private val userData: UserData): IUsersServices {
         if (verifyHashEquals(Email(email),password,hash.second)) return hash.first else throw IllegalStateException("Email does not match password")
     }
 
+    override fun getUserByToken(token: String): User? {
+        return userData.findByToken(token)
+    }
+
 }

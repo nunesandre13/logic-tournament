@@ -51,5 +51,10 @@ sealed interface GameCommands {
             override val player: Player,
             override val gameType: GameType
         ) : PlayCommand
+
+        data class QuitGame(
+            override val player: Player,
+            override val gameType: GameType
+        ) : PlayCommand
     }
 }

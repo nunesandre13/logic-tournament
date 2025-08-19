@@ -38,6 +38,9 @@ class GameViewModel(
         this.player = player
     }
 
+    suspend fun cleanStateUi(){
+      _gameState.emit(GameStateUI.Loading)
+    }
 
     // talvez um flow ou algo do genero
     lateinit var roomId: Id

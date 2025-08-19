@@ -14,17 +14,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import domain.games.Game
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.app.viewModel.GameStateUI
 import games.TicTacToe.TicTacToeGame
 
 @Composable
@@ -33,7 +26,6 @@ fun TicTacToeScreen(
     onCellClick: (row: Int, col: Int) -> Unit,
     onBack: () -> Unit
 ) {
-
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
@@ -73,7 +65,6 @@ fun TicTacToeScreen(
             }
         }
 
-        // Botão para voltar
         Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
             Text("Voltar")
         }

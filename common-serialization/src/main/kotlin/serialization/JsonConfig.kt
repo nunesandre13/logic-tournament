@@ -24,10 +24,10 @@ val AppJson = Json {
             subclass(GameCommandsDTO.PlayCommandDTO.OfferDrawDTO::class)
             subclass(GameCommandsDTO.PlayCommandDTO.AcceptDrawDTO::class)
             subclass(GameCommandsDTO.PlayCommandDTO.GetGameStatusDTO::class)
+            subclass(GameCommandsDTO.PlayCommandDTO.QuitGameDTO::class)
 
             // Data
             // Register the Data interface as a subclass of WebSocketResponse
-
             subclass(GameActionResultDTO.SuccessDTO::class)
             subclass(GameActionResultDTO.InvalidMoveDTO::class)
             subclass(GameActionResultDTO.NotYourTurnDTO::class)

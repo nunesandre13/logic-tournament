@@ -12,8 +12,24 @@ PUT http://localhost:9000/http/users/auth
 Content-Type: application/json
 
 {
-  "email": "Admin@isel.ipl.pt11",
-  "password": "123411"
+  "email": "aaa@g",
+  "password": "111"
+}
+
+###
+GET http://localhost:9000/http/users/me
+Content-Type: application/json
+Authorization: f725b616-7545-4761-af61-22c3b1edf242
+
+
+###
+GET http://localhost:9000/http/users/
+Content-Type: application/json
+
+{
+"name": "Admin11",
+"email": "Admin@isel.ipl.pt11",
+"password": "123411"
 }
 
 ###

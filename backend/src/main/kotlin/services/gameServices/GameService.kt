@@ -59,6 +59,10 @@ class GameService(
             CommandResult.ActionResult(gameRoomManager.updateGameRoom(command,gameRoom.id))
         }catch (e:Exception){
             CommandResult.Error("Something")
+        }finally {
+            if (command is GameCommands.PlayCommand.QuitGame){
+                gameRoomManager.deleteGameRoom(command.gameType, roomId)
+            }
         }
     }
 

@@ -1,20 +1,22 @@
 package data.DataMem
 
 import data.dataInterfaces.AuthData
+import domain.Email
 import domain.RefreshToken
 
 class AuthDataMem : AuthData {
-    private val tokens = mutableMapOf<String, RefreshToken>()
 
     override fun save(token: RefreshToken) {
-        tokens[token.token] = token
+        DataMemMemory.authTable[Email(token.userEmail)] = token
     }
 
     override fun findByToken(token: String): RefreshToken? {
-        return tokens[token]
+        return DataMemMemory.authTable.values.firstOrNull { it.token == token }
     }
 
     override fun deleteByToken(token: String) {
-        tokens.remove(token)
+        DataMemMemory.authTable.entries.find { it.value.token == token }?.also { row ->
+            DataMemMemory.authTable.remove(Email(row.value.userEmail))
+        }
     }
 }

@@ -1,10 +1,12 @@
 package com.example.app.viewModel
 
 // Example UserViewModel
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app.model.services.AuthService
 import com.example.app.model.services.UserServices
+import com.example.app.model.services.logger
 import domain.Email
 import domain.Id
 import domain.Tokens
@@ -29,9 +31,12 @@ class UserViewModel(
     init {
         viewModelScope.launch {
             try {
-                val token = authService.refreshToken()
-                    ?: throw Exception("Token is null")
-                _userState.value = UserStateUI.LoggedIn(User(Id(1111111), "DUMMY", Email("Dummy e-mail@example.com")))
+                val token = authService.refreshToken() ?: throw Exception("Token is null")
+                Log.d("token", token.toString())
+                Log.d("token", "Token refreshed")
+                val user = userServices.getUserByToken(token.refreshToken)
+                Log.d("user_mv_init", user.toString())
+                _userState.value = UserStateUI.LoggedIn(user?: throw Exception("User is null"))
             }catch (e: Exception) {
                 _userState.value = UserStateUI.LoggedOut
             }

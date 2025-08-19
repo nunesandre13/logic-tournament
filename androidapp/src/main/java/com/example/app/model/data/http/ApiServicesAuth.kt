@@ -11,6 +11,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 
 interface ApiServicesAuth {
+
     @Headers("Content-Type: application/json")
     @POST("users/auth/refresh")
     suspend fun refreshToken(@Header("Authorization") token: String): TokensDTO

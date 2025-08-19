@@ -14,14 +14,15 @@ import com.example.app.view.Screens
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewModelScope
 import com.example.app.model.services.logger
 import com.example.app.viewModel.GameStateUI
-
 import com.example.app.viewModel.GameViewModel
 import domain.games.GameCommands
 import domain.games.GameType
 import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
+import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.GameFlow(
     navController: NavHostController,
@@ -48,7 +49,10 @@ fun NavGraphBuilder.GameFlow(
                         viewModel.sendCommand(
                             GameCommands.PlayCommand.MakeMove(viewModel.player,
                                 GameType.TIC_TAC_TOE, TicTacToeMove(s1, s2)), viewModel.roomId) },
-                        {})
+                        {
+                            viewModel.sendCommand(GameCommands.PlayCommand.QuitGame(viewModel.player,
+                                GameType.TIC_TAC_TOE),viewModel.roomId)
+                        })
                 }
                 is GameStateUI.Loading ->{
                     Log.d(logger, "Loading in gameState...")
@@ -59,8 +63,12 @@ fun NavGraphBuilder.GameFlow(
                         CircularProgressIndicator()
                     }
                 }
-
-                GameStateUI.GameOver -> TODO()
+                GameStateUI.GameOver -> {
+                    viewModel.viewModelScope.launch {
+                        viewModel.cleanStateUi()
+                        navController.navigate(Screens.GAMES_LIST.route)
+                    }
+                }
             }
         }
     }

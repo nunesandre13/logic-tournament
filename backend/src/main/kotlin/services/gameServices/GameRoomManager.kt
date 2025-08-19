@@ -30,6 +30,10 @@ class GameRoomManager {
             return@runBlocking gameRoom.play(command)
         }
 
+    fun deleteGameRoom(gameType: GameType, id: Id): Boolean{
+        gameRooms[gameType]?.destroy(id) ?: return false
+        return true
+    }
     private fun verifyPlayer(player: Player, gameRoom: GameRoom) = gameRoom.players.any { it == player }
 
     fun collectGameChanges(gameType: GameType, id: Id): StateFlow<Game> {

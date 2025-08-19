@@ -85,5 +85,13 @@ sealed interface GameCommandsDTO : GameRequest {
             override val roomId: IdDTO?,
             override val gameType: GameType
         ) : PlayCommandDTO
+
+        @Serializable
+        @SerialName("QUIT_GAME_DTO")
+        data class QuitGameDTO(
+            override val player: PlayerDTO,
+            override val roomId: IdDTO?,
+            override val gameType: GameType
+        ) : PlayCommandDTO
     }
 }

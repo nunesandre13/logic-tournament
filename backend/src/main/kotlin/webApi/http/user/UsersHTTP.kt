@@ -4,6 +4,7 @@ import Serializers
 import auth.AuthService
 import domain.Email
 import domain.Id
+import domain.User
 import dto.TokensDTO
 import dto.UserAuthDTO
 import dto.UserCreationDTO
@@ -13,6 +14,7 @@ import org.http4k.routing.*
 import org.http4k.core.Method.POST
 import org.http4k.core.Status.Companion.CREATED
 import org.http4k.core.Status.Companion.OK
+import org.postgresql.gss.MakeGSS.authenticate
 import org.slf4j.LoggerFactory
 import serializers.UserSerializers.toJson
 import services.ServicesInterfaces.IUsersServices
@@ -26,14 +28,22 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
 
     val protectedRoutes = routes(
         "/" bind Method.GET to ::getAllUsers,
-        "{id}" bind Method.GET to ::getUserById
+        "{id}" bind Method.GET to ::getUserById,
+
     )
 
     val nonProtectedRoutes = routes(
         "/" bind POST to ::createUser,
         "auth" bind Method.PUT to ::logIn,
-        "/auth/refresh" bind POST to ::refreshToken
+        "/auth/refresh" bind POST to ::refreshToken,
+        "me" bind Method.GET to ::getUserByToken
     )
+
+    private fun getUserByToken(request: Request) = runCatchingResponse(OK) {
+        val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
+        val user = service.getUserByToken(token) ?: throw IllegalStateException()
+        with(serializer.userSerializer){ user.toOUT() }.toJson().also { logger.info(it) }
+    }
 
     private fun refreshToken(request: Request) = runCatchingResponse(CREATED) {
         val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
