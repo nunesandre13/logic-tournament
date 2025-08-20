@@ -11,6 +11,7 @@ import domain.games.MatchResult.*
 import dto.*
 import dto.GameCommandsDTO.MatchingCommandDTO.*
 import dto.GameCommandsDTO.PlayCommandDTO.*
+import dto.GameResultDTO.*
 import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
 import mappers.IGameMappers
@@ -28,7 +29,7 @@ class GameMappers : IGameMappers {
         is GameActionResultDTO.SuccessDTO -> GameActionResult.Success(toDomain(gameActionResultDTO.game))
         is GameActionResultDTO.InvalidMoveDTO -> GameActionResult.InvalidMove(gameActionResultDTO.message)
         is GameActionResultDTO.NotYourTurnDTO -> GameActionResult.NotYourTurn(gameActionResultDTO.message)
-        is GameActionResultDTO.GameEndedDTO -> GameActionResult.GameEnded(gameActionResultDTO.message)
+        is GameActionResultDTO.GameEndedDTO -> GameActionResult.GameEnded(gameActionResultDTO.message, toDomain(gameActionResultDTO.game))
         is GameActionResultDTO.InvalidCommandDTO -> GameActionResult.InvalidCommand(gameActionResultDTO.message)
     }
 
@@ -36,7 +37,7 @@ class GameMappers : IGameMappers {
         is GameActionResult.Success -> GameActionResultDTO.SuccessDTO(toDTO(gameActionResult.game))
         is GameActionResult.InvalidMove -> GameActionResultDTO.InvalidMoveDTO(gameActionResult.message)
         is GameActionResult.NotYourTurn -> GameActionResultDTO.NotYourTurnDTO(gameActionResult.message)
-        is GameActionResult.GameEnded -> GameActionResultDTO.GameEndedDTO(gameActionResult.message)
+        is GameActionResult.GameEnded -> GameActionResultDTO.GameEndedDTO(gameActionResult.message, toDTO(gameActionResult.game))
         is GameActionResult.InvalidCommand -> GameActionResultDTO.InvalidCommandDTO(gameActionResult.message)
     }
 
@@ -116,6 +117,7 @@ class GameMappers : IGameMappers {
             is GameResultDTO.Ongoing -> GameResult.Ongoing
             is GameResultDTO.Draw -> GameResult.Draw
             is GameResultDTO.Win -> GameResult.Win(winner = gameResultDTO.winner.toDomain())
+            is Quit -> GameResult.Quit
         }
     }
 
@@ -214,7 +216,8 @@ class GameMappers : IGameMappers {
         return when (domain) {
             is GameResult.Ongoing -> GameResultDTO.Ongoing
             is GameResult.Draw -> GameResultDTO.Draw
-            is GameResult.Win -> GameResultDTO.Win(winner = domain.winner.toDTO())
+            is GameResult.Win -> Win(winner = domain.winner.toDTO())
+            is GameResult.Quit -> Quit
         }
     }
 

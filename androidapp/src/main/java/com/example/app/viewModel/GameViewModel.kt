@@ -10,6 +10,7 @@ import domain.Player
 import domain.games.Game
 import domain.games.GameActionResult
 import domain.games.GameCommands
+import domain.games.GameState
 import domain.games.GameType
 import domain.games.MatchResult
 
@@ -38,8 +39,10 @@ class GameViewModel(
         this.player = player
     }
 
-    suspend fun cleanStateUi(){
-      _gameState.emit(GameStateUI.Loading)
+    fun cleanStateUi(){
+        viewModelScope.launch {
+            _gameState.emit(GameStateUI.Loading)
+        }
     }
 
     // talvez um flow ou algo do genero
@@ -65,7 +68,8 @@ class GameViewModel(
                     when (event) {
                         is Game -> {
                             Log.d(logger, "Game Event: $event, now updating ui")
-                            _gameState.emit(GameStateUI.Playing(event))}
+                            handleGame(event)
+                        }
                         is MatchResult.InvalidMatch -> _events.emit(UiEvent.ShowAlert("Invalid match!"))
                         is MatchResult.Match ->{
                             Log.d(logger, "Match Event: $event")
@@ -75,6 +79,19 @@ class GameViewModel(
                 }
             }
         }
+    }
+
+    private suspend fun handleGame(game: Game) {
+        when (game.currentState()) {
+            GameState.WAITING -> _gameState.emit(GameStateUI.Playing(game))
+            GameState.RUNNING -> _gameState.emit(GameStateUI.Playing(game))
+            GameState.FINISHED -> _gameState.emit(GameStateUI.GameOver)
+            GameState.CANCELLED -> _gameState.emit(GameStateUI.GameOver)
+        }
+    }
+
+    fun closeGame(){
+        gameService.close()
     }
 
     fun connectToGame() {

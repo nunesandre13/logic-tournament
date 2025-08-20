@@ -11,14 +11,17 @@ import dto.GamesMessage
 import dto.HeartBeat
 import dto.MatchResultDTO
 import dto.WsProtocol
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import mappers.IGameMappers
 import org.slf4j.LoggerFactory
 import services.ServicesInterfaces.IGameServices
 import toDTO
 import toDomain
+import kotlin.coroutines.coroutineContext
 
 class WsServerGameHandlers(private val gamesService: IGameServices, val mappers: IGameMappers){
 
@@ -33,7 +36,10 @@ class WsServerGameHandlers(private val gamesService: IGameServices, val mappers:
     suspend fun flushAfterResponse() {
         while (true) {
             val task = afterResponseChannel.tryReceive().getOrNull() ?: break
-            task()
+            logger.info(task.toString())
+            CoroutineScope(coroutineContext).launch {
+                task()
+            }
         }
     }
 
@@ -76,6 +82,7 @@ class WsServerGameHandlers(private val gamesService: IGameServices, val mappers:
             is CommandResult.MatchSucceed -> {
                 afterResponse {
                     gamesService.getStateChange(result.gameRoomId, result.gameType).collect { game ->
+                        logger.info("collecting game -> $game")
                         val dto = mappers.toDTO(game)
                         sharedGame.emit(dto)
                     }

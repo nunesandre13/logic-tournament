@@ -16,4 +16,8 @@ sealed class GameResultDTO {
     @Serializable
     @SerialName("Win")
     data class Win(val winner: PlayerDTO) : GameResultDTO()
+
+    @Serializable
+    @SerialName("Quit")
+    data object Quit : GameResultDTO()
 }

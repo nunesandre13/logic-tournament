@@ -20,14 +20,14 @@ class TicTacToeGame(
             is GameCommands.PlayCommand.AcceptDraw -> handleAcceptDraw()
             is GameCommands.PlayCommand.GetGameStatus -> GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
             is GameCommands.PlayCommand.Pass -> GameActionResult.InvalidCommand("ESTE COMANDO NAO SERVE PARA TICTACTOE")
-            is GameCommands.PlayCommand.QuitGame -> GameActionResult.GameEnded("Player: ${command.player} Quit the game")
+            is GameCommands.PlayCommand.QuitGame -> GameActionResult.GameEnded("Player: ${command.player} Quit the game",endGame())
         }
     }
 
 
     private fun makeMove(move: TicTacToeMove): GameActionResult {
         if (result != GameResult.Ongoing) {
-            return GameActionResult.GameEnded("O jogo já terminou.")
+            return GameActionResult.GameEnded("O jogo já terminou.",endGame())
         }
         if (board[move.row][move.col] != ' ') {
             return GameActionResult.InvalidMove("Célula já ocupada.")
@@ -40,7 +40,10 @@ class TicTacToeGame(
 
         val nextTurn = players.first { it != currentPlayer }
         return GameActionResult.Success(TicTacToeGame(players, newBoard, nextTurn, newResult))
+    }
 
+    private fun endGame(): TicTacToeGame {
+        return TicTacToeGame(players,board,currentPlayer, GameResult.Quit)
     }
 
     private fun handleResign(): GameActionResult {
@@ -66,7 +69,7 @@ class TicTacToeGame(
     override fun currentState(): GameState {
         return when (result) {
             GameResult.Ongoing -> GameState.RUNNING
-            GameResult.Draw, is GameResult.Win -> GameState.FINISHED
+            GameResult.Draw, is GameResult.Win, is GameResult.Quit -> GameState.FINISHED
         }
     }
 

@@ -51,4 +51,6 @@ class WsClientService<Request : WsRequest, Response : WsResponse, Protocol : WsP
             handler(protocol)
         }
     }
+
+    fun close() = WsChannel.close()
 }

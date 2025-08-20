@@ -15,15 +15,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import serializers.WebSocketResponseSerializer.toJson
+import java.util.concurrent.CountDownLatch
 import kotlin.time.Duration.Companion.seconds
 
 class GameWebSocketListener(val service: WsClientService<GameRequest, GameResponse, WsProtocol>, val serializer: Serializers, val dispatcher: Dispatcher) : WebSocketListener() {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + Dispatchers.Default)
     private val heartBeatTime = 30.seconds
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -31,7 +36,9 @@ class GameWebSocketListener(val service: WsClientService<GameRequest, GameRespon
             Log.d(logger, "onOpen")
             service.emitToSocket(ConnectionOpened("CONNECTED!"))
             service.readFromChannelToSocket { message ->
-                webSocket.send(with(serializer.webSocketResponseSerializer) { message.toJson() })
+                val json = message.toJson()
+                Log.d(logger,json)
+                webSocket.send(with(serializer.webSocketResponseSerializer) { json })
             }
         }
         scope.launch {
@@ -52,10 +59,15 @@ class GameWebSocketListener(val service: WsClientService<GameRequest, GameRespon
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-        scope.launch {
+        val latch = CountDownLatch(1)
+        CoroutineScope(Dispatchers.Default).launch {
             service.emitFromSocket(ConnectionClosed("FAILED!"))
             Log.d(logger, "CLOSING")
+            service.close()
+            job.cancelAndJoin()
+            latch.countDown()
         }
+        latch.await()
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {

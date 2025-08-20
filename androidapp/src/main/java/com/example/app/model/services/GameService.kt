@@ -25,7 +25,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import toDTO
-import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.atomic.AtomicReference
+
 import kotlin.time.Duration.Companion.seconds
 
 const val logger = "MY_APP"
@@ -39,7 +40,7 @@ class GameService(config: GameServiceConfig){
 
     private val wsService = WsClientService<GameRequest, GameResponse, WsProtocol>()
 
-    private val connection = ConcurrentLinkedDeque<WebSocket>()
+    private val socketRef = AtomicReference<WebSocket?>(null)
 
     private val hearBeatDelay = 30.seconds
 
@@ -72,11 +73,15 @@ class GameService(config: GameServiceConfig){
 
     private val dispatcher = GameDispatcher(wsService)
 
+    fun close(){
+        socketRef.getAndSet(null)?.close(1000, "Closing normally")
+    }
+
     fun connect() {
         Log.d(logger, "opening the socket")
         val listener = listenerFactory.create(wsService,serializer,dispatcher)
         val ws = webSocketClient.newWebSocket(request, listener)
-        connection.add(ws)
+        socketRef.set(ws)
         Log.d(logger, "connection made" )
     }
 

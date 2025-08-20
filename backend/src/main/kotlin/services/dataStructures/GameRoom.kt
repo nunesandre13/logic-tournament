@@ -25,7 +25,10 @@ class GameRoom(val id : Id, val players : List<Player>, game : Game){
                     _stateFlow.value = play.game
                     return play
                 }
-                is GameActionResult.GameEnded -> return play
+                is GameActionResult.GameEnded -> {
+                    _stateFlow.value = play.game
+                    return play
+                }
                 is GameActionResult.InvalidCommand -> return play
                 is GameActionResult.InvalidMove -> return play
                 is GameActionResult.NotYourTurn -> return play

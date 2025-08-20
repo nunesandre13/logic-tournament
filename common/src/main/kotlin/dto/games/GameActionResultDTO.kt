@@ -20,7 +20,7 @@ sealed class GameActionResultDTO : GameResponse {
 
     @Serializable
     @SerialName("GameEnded")
-    data class GameEndedDTO(val message: String) : GameActionResultDTO()
+    data class GameEndedDTO(val message: String, val game: GameDTO) : GameActionResultDTO()
 
     @Serializable
     @SerialName("InvalidCommand")

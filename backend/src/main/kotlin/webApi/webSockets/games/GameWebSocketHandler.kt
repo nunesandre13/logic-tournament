@@ -71,8 +71,10 @@ class GameWebSocketHandler(
                     val response = handlers.onRequest(request)
                     wsService.emitToSocket(response)
                     scope.launch {
+                        logger.info("flushing the functions")
                         handlers.flushAfterResponse()
                     }
+                    logger.info("launch to flush function begin")
                 }
             }
 

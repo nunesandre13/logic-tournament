@@ -45,13 +45,15 @@ fun NavGraphBuilder.GameFlow(
             when (val state = gameState) {
                 is GameStateUI.Playing -> {
                     Log.d(logger, "GAMING PLAYING")
-                    TicTacToeScreen(game = state.game as TicTacToeGame, {s1, s2 ->
+                    TicTacToeScreen(game = state.game as TicTacToeGame, { s1, s2 ->
                         viewModel.sendCommand(
                             GameCommands.PlayCommand.MakeMove(viewModel.player,
                                 GameType.TIC_TAC_TOE, TicTacToeMove(s1, s2)), viewModel.roomId) },
                         {
                             viewModel.sendCommand(GameCommands.PlayCommand.QuitGame(viewModel.player,
                                 GameType.TIC_TAC_TOE),viewModel.roomId)
+                            viewModel.cleanStateUi()
+                            viewModel.closeGame()
                         })
                 }
                 is GameStateUI.Loading ->{
