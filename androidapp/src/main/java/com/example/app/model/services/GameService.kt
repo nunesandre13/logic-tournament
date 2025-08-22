@@ -17,15 +17,18 @@ import dto.HeartBeat
 import dto.WsProtocol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import toDTO
-import java.util.concurrent.atomic.AtomicReference
 
 import kotlin.time.Duration.Companion.seconds
 
@@ -38,15 +41,18 @@ class GameService(config: GameServiceConfig){
     private val mappers: GameMappers = config.mappers
     private val listenerFactory = GameWebSocketListenerFactory()
 
-    private val wsService = WsClientService<GameRequest, GameResponse, WsProtocol>()
+    data class WsClient(val wsClient: WebSocket, val wsService: WsClientService<GameRequest, GameResponse, WsProtocol>, val scopeJob: Job)
 
-    private val socketRef = AtomicReference<WebSocket?>(null)
+    private var socketRef : WsClient? = null
+
+    private val mutex = Mutex()
 
     private val hearBeatDelay = 30.seconds
 
     private val handlers = GamesHandlers(mappers)
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    init {
+
+
+    fun socketCommunication(scope: CoroutineScope, wsService: WsClientService<GameRequest, GameResponse, WsProtocol>){
         scope.launch {
             wsService.onProtocol { protocol ->
                 Log.d(logger, protocol.toString())
@@ -71,27 +77,51 @@ class GameService(config: GameServiceConfig){
 
     val gameData = handlers.data
 
-    private val dispatcher = GameDispatcher(wsService)
 
-    fun close(){
-        socketRef.getAndSet(null)?.close(1000, "Closing normally")
+    suspend fun close(){
+        val result = mutex.withLock {
+            val client = socketRef
+            socketRef = null
+            client
+        }
+        if (result != null) {
+            result.scopeJob.cancelAndJoin()
+            result.wsClient.close(1000, null)
+        }
     }
 
-    fun connect() {
+    suspend fun connect() {
+        val wsService = WsClientService<GameRequest, GameResponse, WsProtocol>()
+        val job = SupervisorJob()
+        val scope = CoroutineScope( job + Dispatchers.Default)
         Log.d(logger, "opening the socket")
+        val dispatcher = GameDispatcher(wsService)
         val listener = listenerFactory.create(wsService,serializer,dispatcher)
         val ws = webSocketClient.newWebSocket(request, listener)
-        socketRef.set(ws)
+        val client = WsClient(ws, wsService,job)
+        socketCommunication(scope,wsService)
+        mutex.withLock {
+            socketRef = client
+        }
         Log.d(logger, "connection made" )
     }
 
     suspend fun sendCommand(command: GameCommands, roomId: Id) {
-        Log.d(logger, "sending command $command")
-        wsService.emitToSocket(mappers.toDTO(command, roomId.toDTO()))
+        mutex.withLock {
+            Log.d(logger, "sending command $command")
+            socketRef?.wsService?.emitToSocket(mappers.toDTO(command, roomId.toDTO()))
+        }
 
     }
 
     suspend fun requestGame(player: Player, gameType: GameType) {
-        wsService.emitToSocket(GameCommandsDTO.MatchingCommandDTO.RequestMatchDTO(player.toDTO(), gameType))
+        mutex.withLock {
+            socketRef?.wsService?.emitToSocket(
+                GameCommandsDTO.MatchingCommandDTO.RequestMatchDTO(
+                    player.toDTO(),
+                    gameType
+                )
+            )
+        }
     }
 }

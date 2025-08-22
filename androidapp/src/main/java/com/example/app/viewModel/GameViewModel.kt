@@ -13,7 +13,6 @@ import domain.games.GameCommands
 import domain.games.GameState
 import domain.games.GameType
 import domain.games.MatchResult
-
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -87,16 +86,18 @@ class GameViewModel(
             GameState.RUNNING -> _gameState.emit(GameStateUI.Playing(game))
             GameState.FINISHED -> _gameState.emit(GameStateUI.GameOver)
             GameState.CANCELLED -> _gameState.emit(GameStateUI.GameOver)
-        }
+        }.also { Log.d("GameViewModel", "Game State: ${game.currentState()}") }
     }
 
     fun closeGame(){
-        gameService.close()
+        viewModelScope.launch {
+            gameService.close()
+        }
     }
 
     fun connectToGame() {
-        gameService.connect()
         viewModelScope.launch {
+            gameService.connect()
             _events.emit(UiEvent.ShowAlert("Connected!"))
         }
     }

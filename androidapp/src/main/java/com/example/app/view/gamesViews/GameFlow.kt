@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -22,7 +23,6 @@ import domain.games.GameCommands
 import domain.games.GameType
 import games.TicTacToe.TicTacToeGame
 import games.TicTacToe.TicTacToeMove
-import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.GameFlow(
     navController: NavHostController,
@@ -41,7 +41,7 @@ fun NavGraphBuilder.GameFlow(
             val gameState by viewModel.gameState.collectAsStateWithLifecycle()
             Log.d(logger,"state changed to $gameState")
 
-            // deve ser alterado ainda
+
             when (val state = gameState) {
                 is GameStateUI.Playing -> {
                     Log.d(logger, "GAMING PLAYING")
@@ -66,9 +66,10 @@ fun NavGraphBuilder.GameFlow(
                     }
                 }
                 GameStateUI.GameOver -> {
-                    viewModel.viewModelScope.launch {
-                        viewModel.cleanStateUi()
+                    LaunchedEffect(Unit) {
+                        viewModel.closeGame()
                         navController.navigate(Screens.GAMES_LIST.route)
+                        viewModel.cleanStateUi()
                     }
                 }
             }
