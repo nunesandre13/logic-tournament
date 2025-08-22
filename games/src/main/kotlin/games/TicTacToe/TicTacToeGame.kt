@@ -12,9 +12,12 @@ class TicTacToeGame(
     override val gameType: GameType = GameType.TIC_TAC_TOE
 
     override fun play(command: GameCommands.PlayCommand): GameActionResult {
-        if (currentPlayer != command.player) return GameActionResult.NotYourTurn("NOT YOUR TURN")
+
         return when (command) {
-            is GameCommands.PlayCommand.MakeMove -> makeMove(command.gameMove as TicTacToeMove)
+            is GameCommands.PlayCommand.MakeMove -> {
+                if (currentPlayer != command.player) return GameActionResult.NotYourTurn("NOT YOUR TURN")
+                makeMove(command.gameMove as TicTacToeMove)
+            }
             is GameCommands.PlayCommand.Resign -> handleResign()
             is GameCommands.PlayCommand.OfferDraw -> handleOfferDraw()
             is GameCommands.PlayCommand.AcceptDraw -> handleAcceptDraw()

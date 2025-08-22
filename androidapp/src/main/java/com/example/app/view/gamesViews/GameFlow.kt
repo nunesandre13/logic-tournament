@@ -46,6 +46,7 @@ fun NavGraphBuilder.GameFlow(
                         { s1, s2 ->  viewModel.makeMove(TicTacToeMove(s1, s2), GameType.TIC_TAC_TOE) },
                         {   viewModel.quitGame(GameType.TIC_TAC_TOE)
                             viewModel.cleanStateUi()
+                            navController.popBackStack()
                         },{ viewModel.quitGame(GameType.TIC_TAC_TOE) }
                         )
                 }
