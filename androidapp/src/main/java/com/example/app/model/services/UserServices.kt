@@ -5,13 +5,27 @@ import domain.User
 import domain.UserAuthResponse
 import dto.UserCreationDTO
 import dto.UserOUT
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 class UserServices(val dataSource: DataUsers) {
 
-    suspend fun getUserByToken(token: String): User? = dataSource.getUserByToken(token)
+    private val _loggedUser = MutableStateFlow<User?>(null)
+    val loggedUser: StateFlow<User?> = _loggedUser
+
+    suspend fun getUserByToken(token: String): User?  {
+        val user = dataSource.getUserByToken(token)
+        user?.also {
+            _loggedUser.emit(it)
+        }
+        return user
+    }
 
     suspend fun getUserById(token: String, id: Int): UserOUT = dataSource.getUserById(token, id)
 
-    suspend fun createUser(user: UserCreationDTO): UserAuthResponse = dataSource.createUser(user)
+    suspend fun createUser(user: UserCreationDTO): UserAuthResponse = dataSource.createUser(user).let {  user ->
+        _loggedUser.emit(user.user)
+        user
+    }
 }

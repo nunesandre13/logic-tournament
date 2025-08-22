@@ -10,9 +10,12 @@ import domain.Player
 import domain.games.Game
 import domain.games.GameActionResult
 import domain.games.GameCommands
+import domain.games.GameCommands.PlayCommand.MakeMove
+import domain.games.GameCommands.PlayCommand.QuitGame
 import domain.games.GameState
 import domain.games.GameType
 import domain.games.MatchResult
+import domain.games.Move
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,7 +27,7 @@ class GameViewModel(
     private val gameService: GameService
 ) : ViewModel() {
 
-    private val _gameState = MutableStateFlow<GameStateUI>(GameStateUI.Loading)
+    private val _gameState = MutableStateFlow<GameStateUI>(GameStateUI.Idle)
     val gameState: StateFlow<GameStateUI> = _gameState
 
 
@@ -40,7 +43,7 @@ class GameViewModel(
 
     fun cleanStateUi(){
         viewModelScope.launch {
-            _gameState.emit(GameStateUI.Loading)
+            _gameState.emit(GameStateUI.Idle)
         }
     }
 
@@ -95,10 +98,15 @@ class GameViewModel(
         }
     }
 
+    fun makeMove(move: Move, gameType: GameType) {
+        sendCommand(MakeMove(player, gameType, move),roomId)
+    }
+
     fun connectToGame() {
         viewModelScope.launch {
             gameService.connect()
             _events.emit(UiEvent.ShowAlert("Connected!"))
+            _gameState.emit(GameStateUI.Loading)
         }
     }
 
@@ -106,6 +114,10 @@ class GameViewModel(
         viewModelScope.launch {
             gameService.sendCommand(command, roomId)
         }
+    }
+
+    fun quitGame(gameType: GameType) {
+        sendCommand(QuitGame(player, gameType),roomId)
     }
 
     fun requestGame(player: Player, gameType: GameType) {
@@ -120,6 +132,7 @@ sealed class GameStateUI {
     object Loading : GameStateUI()
     data class Playing(val game: Game) : GameStateUI()
     object GameOver : GameStateUI()
+    object Idle : GameStateUI()
 }
 
 sealed class UiEvent {

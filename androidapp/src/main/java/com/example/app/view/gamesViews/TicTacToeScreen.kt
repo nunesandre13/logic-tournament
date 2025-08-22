@@ -24,7 +24,8 @@ import games.TicTacToe.TicTacToeGame
 fun TicTacToeScreen(
     game: TicTacToeGame,
     onCellClick: (row: Int, col: Int) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onQuit: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -66,7 +67,10 @@ fun TicTacToeScreen(
         }
 
         Button(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
-            Text("Voltar")
+            Text("GO BACK")
+        }
+        Button(onClick = onQuit, modifier = Modifier.fillMaxWidth()) {
+            Text("QUIT")
         }
     }
 }
