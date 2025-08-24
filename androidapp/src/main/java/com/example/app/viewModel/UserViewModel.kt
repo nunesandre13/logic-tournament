@@ -34,7 +34,7 @@ class UserViewModel(
                 val token = authService.refreshToken() ?: throw Exception("Token is null")
                 Log.d("token", token.toString())
                 Log.d("token", "Token refreshed")
-                val user = userServices.getUserByToken(token.refreshToken)
+                val user = userServices.getUserByToken()
                 Log.d("user_mv_init", user.toString())
                 _userState.value = UserStateUI.LoggedIn(user?: throw Exception("User is null"))
             }catch (e: Exception) {

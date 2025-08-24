@@ -14,8 +14,8 @@ class UserServices(val dataSource: DataUsers) {
     private val _loggedUser = MutableStateFlow<User?>(null)
     val loggedUser: StateFlow<User?> = _loggedUser
 
-    suspend fun getUserByToken(token: String): User?  {
-        val user = dataSource.getUserByToken(token)
+    suspend fun getUserByToken(): User?  {
+        val user = dataSource.getUserInfo()
         user?.also {
             _loggedUser.emit(it)
         }

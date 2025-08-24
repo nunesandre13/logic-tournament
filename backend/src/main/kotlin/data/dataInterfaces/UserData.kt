@@ -2,6 +2,7 @@ package data.dataInterfaces
 
 import domain.Email
 import domain.User
+import domain.UsersWithCredentials
 
 interface UserData {
     fun findById(id: Long): User?
@@ -10,7 +11,6 @@ interface UserData {
 
     fun findAll(): List<User>
 
-    fun getUserPassWordHash(email: Email): Pair<User, ByteArray>?
+    fun getUserPassWordHash(email: Email): UsersWithCredentials?
 
-    fun findByToken(token: String): User?
 }

@@ -7,7 +7,7 @@ import domain.RefreshToken
 class AuthDataMem : AuthData {
 
     override fun save(token: RefreshToken) {
-        DataMemMemory.authTable[Email(token.userEmail)] = token
+        DataMemMemory.authTable[token.userId] = token
     }
 
     override fun findByToken(token: String): RefreshToken? {
@@ -16,7 +16,7 @@ class AuthDataMem : AuthData {
 
     override fun deleteByToken(token: String) {
         DataMemMemory.authTable.entries.find { it.value.token == token }?.also { row ->
-            DataMemMemory.authTable.remove(Email(row.value.userEmail))
+            DataMemMemory.authTable.remove(row.value.userId)
         }
     }
 }

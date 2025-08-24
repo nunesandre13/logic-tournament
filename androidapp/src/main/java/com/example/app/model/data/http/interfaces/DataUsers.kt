@@ -7,7 +7,7 @@ import dto.UserOUT
 
 interface DataUsers {
 
-    suspend fun getUserByToken(token: String): User?
+    suspend fun getUserInfo(): User?
 
     suspend fun getUserById(token: String, id: Int): UserOUT
 

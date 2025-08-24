@@ -18,18 +18,18 @@ class AuthService(
 ) {
     private val algorithm = Algorithm.HMAC256(jwtSecret)
 
-    fun generateAccessToken(userEmail: String): String {
+    fun generateAccessToken(userId: Id): String {
         return JWT.create()
             .withIssuer(jwtIssuer)
-            .withClaim("userEmail", userEmail)
+            .withClaim("userId", userId.id)
             .withExpiresAt(Instant.now().plus(15, ChronoUnit.MINUTES)) // 15 minutos
             .sign(algorithm)
     }
 
-    fun generateAndSaveRefreshToken(userEmail: String): String {
+    fun generateAndSaveRefreshToken(userId: Id): String {
         val token = UUID.randomUUID().toString()
         val expiration = Instant.now().plus(7, ChronoUnit.DAYS) // 7 dias
-        authData.save(RefreshToken(token, userEmail, expiration))
+        authData.save(RefreshToken(token, userId, expiration))
         return token
     }
 
@@ -38,26 +38,27 @@ class AuthService(
     }
 
     // should return a boolean
-    fun verifyRefreshToken(token: String): Email {
+    fun verifyRefreshToken(token: String): Id {
         val refreshToken = authData.findByToken(token)
             ?: throw Exception("Refresh token não encontrado")
         if (refreshToken.expiresAt.isBefore(Instant.now())) {
             throw Exception("Refresh token expirado")
         }
-        return Email(refreshToken.userEmail)
+        return refreshToken.userId
     }
 
-    fun generateTokens(email: String): Tokens = Tokens(generateAccessToken(email),generateAndSaveRefreshToken(email))
+    
+    fun generateTokens(userId: Id): Tokens = Tokens(generateAccessToken(userId),generateAndSaveRefreshToken(userId))
 
-    fun verifyAccessToken(token: String): Email {
+    fun verifyAccessToken(token: String): Id {
         try {
             val verifier = JWT.require(algorithm)
                 .withIssuer(jwtIssuer)
                 .build()
             val decodedJWT = verifier.verify(token)
-            val userId = decodedJWT.getClaim("userEmail").asString()
+            val userId = decodedJWT.getClaim("userId").asLong()
                 ?: throw Exception("Claim userId não encontrado")
-            return Email(userId)
+            return Id(userId)
         } catch (e: Exception) {
             throw Exception("Token inválido ou expirado", e)
         }

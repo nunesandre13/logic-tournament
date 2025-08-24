@@ -10,19 +10,15 @@ import services.verifyHashEquals
 
 class UserServices(private val userData: UserData): IUsersServices {
 
-    override fun createUser(userName: String, email: Email, password: String): User = userData.save(userName, email.email, convertToHash(email, password))
+    override fun createUser(userName: String, email: Email, password: String): User = userData.save(userName, email.email, convertToHash(password))
 
     override fun listUsers(): List<User> = userData.findAll()
 
     override fun getUserById(id: Id): User? = userData.findById(id.id)
 
     override fun authenticate(email: String, password: String): User {
-        val hash = userData.getUserPassWordHash(Email(email))  ?: throw IllegalStateException("Email does not exist")
-        if (verifyHashEquals(Email(email),password,hash.second)) return hash.first else throw IllegalStateException("Email does not match password")
-    }
-
-    override fun getUserByToken(token: String): User? {
-        return userData.findByToken(token)
+        val usersWithCredentials = userData.getUserPassWordHash(Email(email))  ?: throw IllegalStateException("Email does not exist")
+        if (verifyHashEquals(password,usersWithCredentials.passwordHash)) return usersWithCredentials.user else throw IllegalStateException("Email does not match password")
     }
 
 }

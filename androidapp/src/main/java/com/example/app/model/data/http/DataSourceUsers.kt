@@ -12,9 +12,8 @@ import toDomain
 
 class DataSourceUsers(private val api: ApiServiceUsers): DataUsers{
 
-    override suspend fun getUserByToken(token: String): User {
-
-        val c = api.getUserByToken(token).toDomain()
+    override suspend fun getUserInfo(): User {
+        val c = api.getUserByToken().toDomain()
         Log.d("API", c.toString())
         return c
     }

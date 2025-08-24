@@ -36,19 +36,20 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
         "/" bind POST to ::createUser,
         "auth" bind Method.PUT to ::logIn,
         "/auth/refresh" bind POST to ::refreshToken,
-        "me" bind Method.GET to ::getUserByToken
+        "me" bind Method.GET to ::getUserInformation
     )
 
-    private fun getUserByToken(request: Request) = runCatchingResponse(OK) {
+    private fun getUserInformation(request: Request) = runCatchingResponse(OK) {
         val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
-        val user = service.getUserByToken(token) ?: throw IllegalStateException()
+        val userId = authService.verifyAccessToken(token)
+        val user = service.getUserById(userId) ?: throw IllegalStateException("User with id $userId not found")
         with(serializer.userSerializer){ user.toOUT() }.toJson().also { logger.info(it) }
     }
 
     private fun refreshToken(request: Request) = runCatchingResponse(CREATED) {
         val token = request.header("Authorization")?.substringAfter("Bearer ") ?: throw IllegalStateException("Token invalid")
-        val email = authService.verifyRefreshToken(token)
-        Json.encodeToString(TokensDTO(authService.generateAccessToken(email.email),token))
+        val userId = authService.verifyRefreshToken(token)
+        Json.encodeToString(TokensDTO(authService.generateAccessToken(userId),token))
     }
 
     private fun getUserById(request: Request) = runCatchingResponse(OK){
@@ -63,15 +64,15 @@ class UsersHTTP(private val service: IUsersServices, private val serializer: Ser
     private fun createUser(request: Request) = runCatchingResponse(CREATED) {
         logger.info("body String ${request.bodyString()}")
         val userReq: UserCreationDTO = with(serializer.userSerializer) { request.bodyString().toUserIn() }
-        val userCreated = service.createUser(userReq.name, Email(userReq.email),userReq.password).toOUT()
-        val userResponse = UserAuthDTO(userCreated,authService.generateTokens(userReq.email).toDTO())
+        val userCreated = service.createUser(userReq.name, Email(userReq.email),userReq.password)
+        val userResponse = UserAuthDTO(userCreated.toOUT(),authService.generateTokens(userCreated.id).toDTO())
         Json.encodeToString(userResponse)
     }
 
     private fun logIn(request: Request) = runCatchingResponse(OK) {
         val logData = with(serializer.userSerializer) { request.bodyString().toLogInUser() }
         val user = service.authenticate(logData.email,logData.password)
-        Json.encodeToString(UserAuthDTO(user.toOUT(),authService.generateTokens(logData.email).toDTO())) // to be removed
+        Json.encodeToString(UserAuthDTO(user.toOUT(),authService.generateTokens(user.id).toDTO()))
     }
 
 }

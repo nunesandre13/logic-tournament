@@ -1,5 +1,6 @@
 package com.example.app.model.data.http
 
+import com.example.app.model.annotations.RequiresAuth
 import dto.UserAuthDTO
 import dto.UserCreationDTO
 import dto.UserOUT
@@ -12,9 +13,10 @@ import retrofit2.http.Path
 
 interface ApiServiceUsers {
 
+    @RequiresAuth
     @Headers("Content-Type: application/json")
     @GET("users/me")
-    suspend fun getUserByToken(@Header("Authorization") token: String): UserOUT
+    suspend fun getUserByToken(): UserOUT
 
     @Headers("Content-Type: application/json")
     @GET("users/{id}")

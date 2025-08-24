@@ -9,6 +9,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 object DataMemMemory {
     val UserTable = ConcurrentHashMap<Id, UserRow>()
-    val authTable = ConcurrentHashMap<Email, RefreshToken>()
+    val authTable = ConcurrentHashMap<Id, RefreshToken>()
     data class UserRow(val user: User, val passwordHash: ByteArray)
 }

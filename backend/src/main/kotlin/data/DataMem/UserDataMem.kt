@@ -5,6 +5,7 @@ import data.dataInterfaces.UserData
 import domain.Email
 import domain.Id
 import domain.User
+import domain.UsersWithCredentials
 import kotlin.random.Random
 
 class UserDataMem: UserData {
@@ -24,15 +25,7 @@ class UserDataMem: UserData {
 
     override fun findAll(): List<User> = users.values.toList().map { it.user }
 
-    override fun getUserPassWordHash(email: Email): Pair<User,ByteArray>? = users.values.firstOrNull{ it.user.email == email }.let {
-        Pair(it?.user ?: return null, it.passwordHash) }
+    override fun getUserPassWordHash(email: Email): UsersWithCredentials? = users.values.firstOrNull{ it.user.email == email }.let {
+        UsersWithCredentials(it?.user ?: return null, it.passwordHash) }
 
-    override fun findByToken(token: String): User? {
-       val email =  DataMemMemory.authTable.entries.firstOrNull{
-            it.value.token == token
-        }?.key
-        print(email)
-        email ?: return null
-        return DataMemMemory.UserTable.values.firstOrNull { it.user.email == email }?.user
-    }
 }
